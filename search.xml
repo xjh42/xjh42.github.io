@@ -29,7 +29,11 @@
     <title>DLSys module 4: Advanced Neural Network</title>
     <url>/2024/08/11/DLSys-module-4-Advanced-Neural-Network/</url>
     <content><![CDATA[<p>In this module, we’ll introduce three typical network: cnn, rnn and transformer!</p>
-<h1 id="Convolutional-Networks"><a href="#Convolutional-Networks" class="headerlink" title="Convolutional Networks"></a>Convolutional Networks</h1><h2 id="Introduction-to-CNN"><a href="#Introduction-to-CNN" class="headerlink" title="Introduction to CNN"></a>Introduction to CNN</h2><h2 id="Convolutional-Network-Implementation"><a href="#Convolutional-Network-Implementation" class="headerlink" title="Convolutional Network Implementation"></a>Convolutional Network Implementation</h2>]]></content>
+<h1 id="Convolutional-Networks"><a href="#Convolutional-Networks" class="headerlink" title="Convolutional Networks"></a>Convolutional Networks</h1><h2 id="Introduction-to-CNN"><a href="#Introduction-to-CNN" class="headerlink" title="Introduction to CNN"></a>Introduction to CNN</h2><h3 id="Convolutional-operators-in-deep-networks"><a href="#Convolutional-operators-in-deep-networks" class="headerlink" title="Convolutional operators in deep networks"></a>Convolutional operators in deep networks</h3><p>parameter is too big + not preserve the structure of the images</p>
+<p>–&gt; why we need convolution</p>
+<h3 id="Elements-of-practical-convolutions"><a href="#Elements-of-practical-convolutions" class="headerlink" title="Elements of practical convolutions"></a>Elements of practical convolutions</h3><p>element-wise multiplcation</p>
+<p>image </p>
+<h3 id="Differentiating-convolutions"><a href="#Differentiating-convolutions" class="headerlink" title="Differentiating convolutions"></a>Differentiating convolutions</h3><h2 id="Convolutional-Network-Implementation"><a href="#Convolutional-Network-Implementation" class="headerlink" title="Convolutional Network Implementation"></a>Convolutional Network Implementation</h2>]]></content>
       <tags>
         <tag>cnn</tag>
         <tag>rnn</tag>
