@@ -20,20 +20,23 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="In this module, we’ll introduce three typical network: cnn, rnn and transformer!  Convolutional Networks Introduction to CNN Convolutional operators in deep networks parameter is too big + not preserv">
+  <meta name="description" content="In this module, we’ll introduce three typical network: cnn, rnn and transformer!  Introduction to CNN Convolutional operators in deep networks parameter is too big + not preserve the structure of the">
 <meta property="og:type" content="article">
-<meta property="og:title" content="DLSys module 4: Advanced Neural Network">
+<meta property="og:title" content="DLSys module 4: Advanced Neural Network -- CNN">
 <meta property="og:url" content="http://example.com/2024/08/11/DLSys-module-4-Advanced-Neural-Network/index.html">
 <meta property="og:site_name" content="MLSys Day One">
-<meta property="og:description" content="In this module, we’ll introduce three typical network: cnn, rnn and transformer!  Convolutional Networks Introduction to CNN Convolutional operators in deep networks parameter is too big + not preserv">
+<meta property="og:description" content="In this module, we’ll introduce three typical network: cnn, rnn and transformer!  Introduction to CNN Convolutional operators in deep networks parameter is too big + not preserve the structure of the">
 <meta property="og:locale">
+<meta property="og:image" content="http://example.com/Users/bytedance/blog/source/_posts/image-20240812094248970.png">
+<meta property="og:image" content="http://example.com/Users/bytedance/blog/source/_posts/image-20240812094835275.png">
 <meta property="article:published_time" content="2024-08-11T10:45:43.000Z">
-<meta property="article:modified_time" content="2024-08-12T01:03:50.722Z">
+<meta property="article:modified_time" content="2024-08-15T01:41:42.485Z">
 <meta property="article:author" content="xjh42">
 <meta property="article:tag" content="cnn">
 <meta property="article:tag" content="rnn">
 <meta property="article:tag" content="transformer">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/Users/bytedance/blog/source/_posts/image-20240812094248970.png">
 
 <link rel="canonical" href="http://example.com/2024/08/11/DLSys-module-4-Advanced-Neural-Network/">
 
@@ -48,7 +51,7 @@
   };
 </script>
 
-  <title>DLSys module 4: Advanced Neural Network | MLSys Day One</title>
+  <title>DLSys module 4: Advanced Neural Network -- CNN | MLSys Day One</title><meta name="robots" content="noindex">
   
 
 
@@ -181,7 +184,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          DLSys module 4: Advanced Neural Network
+          DLSys module 4: Advanced Neural Network -- CNN
         </h1>
 
         <div class="post-meta">
@@ -198,8 +201,17 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-08-12 09:03:50" itemprop="dateModified" datetime="2024-08-12T09:03:50+08:00">2024-08-12</time>
+                <time title="Modified: 2024-08-15 09:41:42" itemprop="dateModified" datetime="2024-08-15T09:41:42+08:00">2024-08-15</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/dlsys/" itemprop="url" rel="index"><span itemprop="name">dlsys</span></a>
+                </span>
+            </span>
 
           
 
@@ -213,11 +225,25 @@
 
       
         <p>In this module, we’ll introduce three typical network: cnn, rnn and transformer!</p>
-<h1 id="Convolutional-Networks"><a href="#Convolutional-Networks" class="headerlink" title="Convolutional Networks"></a>Convolutional Networks</h1><h2 id="Introduction-to-CNN"><a href="#Introduction-to-CNN" class="headerlink" title="Introduction to CNN"></a>Introduction to CNN</h2><h3 id="Convolutional-operators-in-deep-networks"><a href="#Convolutional-operators-in-deep-networks" class="headerlink" title="Convolutional operators in deep networks"></a>Convolutional operators in deep networks</h3><p>parameter is too big + not preserve the structure of the images</p>
+<h2 id="Introduction-to-CNN"><a href="#Introduction-to-CNN" class="headerlink" title="Introduction to CNN"></a>Introduction to CNN</h2><h3 id="Convolutional-operators-in-deep-networks"><a href="#Convolutional-operators-in-deep-networks" class="headerlink" title="Convolutional operators in deep networks"></a>Convolutional operators in deep networks</h3><p>parameter is too big + not preserve the structure of the images</p>
 <p>–&gt; why we need convolution</p>
-<h3 id="Elements-of-practical-convolutions"><a href="#Elements-of-practical-convolutions" class="headerlink" title="Elements of practical convolutions"></a>Elements of practical convolutions</h3><p>element-wise multiplcation</p>
-<p>image </p>
-<h3 id="Differentiating-convolutions"><a href="#Differentiating-convolutions" class="headerlink" title="Differentiating convolutions"></a>Differentiating convolutions</h3><h2 id="Convolutional-Network-Implementation"><a href="#Convolutional-Network-Implementation" class="headerlink" title="Convolutional Network Implementation"></a>Convolutional Network Implementation</h2>
+<p>element-wise multiplcation</p>
+<p>convolution in deep network</p>
+<h3 id="Elements-of-practical-convolutions"><a href="#Elements-of-practical-convolutions" class="headerlink" title="Elements of practical convolutions"></a>Elements of practical convolutions</h3><p>padding–&gt; keep image resolution same</p>
+<p>–&gt; convolution produce smaller images</p>
+<p>only work for odd kernel size</p>
+<p>Stride &#x2F; pooling –&gt; downsampling image</p>
+<p>group convolution –&gt; reduce w parameter size</p>
+<p>Dilations –&gt; large receptive field</p>
+<h3 id="Differentiating-convolutions"><a href="#Differentiating-convolutions" class="headerlink" title="Differentiating convolutions"></a>Differentiating convolutions</h3><p>Convolution as an operator, not use the cg –&gt; save memory</p>
+<p>Convolution –&gt; matmul</p>
+<p><img src="/Users/bytedance/blog/source/_posts/image-20240812094248970.png" alt="image-20240812094248970"></p>
+<p>conceptial idea –&gt; we donnot generate this matrix</p>
+<p>calculate image transpose</p>
+<p>–&gt; calculate the gradient, we just do convolution with reversed weight</p>
+<p><img src="/Users/bytedance/blog/source/_posts/image-20240812094835275.png" alt="image-20240812094835275"></p>
+<p>![image-20240812095346019](&#x2F;Users&#x2F;bytedance&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240812095346019.png)</p>
+<h2 id="Convolutional-Network-Implementation"><a href="#Convolutional-Network-Implementation" class="headerlink" title="Convolutional Network Implementation"></a>Convolutional Network Implementation</h2><h3 id="Storage-Order"><a href="#Storage-Order" class="headerlink" title="Storage Order"></a>Storage Order</h3><h3 id="Naive-Convolution"><a href="#Naive-Convolution" class="headerlink" title="Naive Convolution"></a>Naive Convolution</h3><!-- flag of hidden posts -->
     </div>
 
     
@@ -235,16 +261,6 @@
 
 
         
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2024/08/11/DLSys-module-3-Hardware-Acceleration/" rel="prev" title="DLSys module 3: Hardware Acceleration">
-      <i class="fa fa-chevron-left"></i> DLSys module 3: Hardware Acceleration
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2024/08/11/CUDA-Mode-1-Profiling-and-Integrating-CUDA-kernels-in-PyTorch/" rel="next" title="CUDA Mode 1: Profiling and Integrating CUDA kernels in PyTorch">
-      CUDA Mode 1: Profiling and Integrating CUDA kernels in PyTorch <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
       </footer>
     
   </article>
@@ -302,7 +318,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Convolutional-Networks"><span class="nav-number">1.</span> <span class="nav-text">Convolutional Networks</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction-to-CNN"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction to CNN</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Convolutional-operators-in-deep-networks"><span class="nav-number">1.1.1.</span> <span class="nav-text">Convolutional operators in deep networks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Elements-of-practical-convolutions"><span class="nav-number">1.1.2.</span> <span class="nav-text">Elements of practical convolutions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Differentiating-convolutions"><span class="nav-number">1.1.3.</span> <span class="nav-text">Differentiating convolutions</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Convolutional-Network-Implementation"><span class="nav-number">1.2.</span> <span class="nav-text">Convolutional Network Implementation</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction-to-CNN"><span class="nav-number">1.</span> <span class="nav-text">Introduction to CNN</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Convolutional-operators-in-deep-networks"><span class="nav-number">1.1.</span> <span class="nav-text">Convolutional operators in deep networks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Elements-of-practical-convolutions"><span class="nav-number">1.2.</span> <span class="nav-text">Elements of practical convolutions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Differentiating-convolutions"><span class="nav-number">1.3.</span> <span class="nav-text">Differentiating convolutions</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Convolutional-Network-Implementation"><span class="nav-number">2.</span> <span class="nav-text">Convolutional Network Implementation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Storage-Order"><span class="nav-number">2.1.</span> <span class="nav-text">Storage Order</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Naive-Convolution"><span class="nav-number">2.2.</span> <span class="nav-text">Naive Convolution</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -313,19 +329,6 @@
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
-          <span class="site-state-item-count">7</span>
-          <span class="site-state-item-name">posts</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">3</span>
-        <span class="site-state-item-name">tags</span></a>
-      </div>
   </nav>
 </div>
 
