@@ -1,3 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
+  <entry>
+    <title>CUDA Module 1: Parallel Programming Basics</title>
+    <url>/2024/08/15/CUDA-Module-1-Parallel-Programming-Basics/</url>
+    <content><![CDATA[<p>PMPP ch2~4</p>
+<p>Ece408 2~5</p>
+<p>cuda modę 2</p>
+<h2 id="Introduction-to-Parallel-Computing-and-CUDA"><a href="#Introduction-to-Parallel-Computing-and-CUDA" class="headerlink" title="Introduction to Parallel Computing and CUDA"></a>Introduction to Parallel Computing and CUDA</h2><p>Basic CUDA Execution model</p>
+<p>![image-20240815091901873](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815091901873.png)</p>
+<p>—-&gt; how cuda manage threads</p>
+<p>![image-20240815092350781](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815092350781.png)</p>
+<p>![image-20240815092741008](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815092741008.png)</p>
+<p>logical structure of cuda</p>
+<p>![image-20240815093040013](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815093040013.png)</p>
+<p>gridDim</p>
+<p>![image-20240815093204621](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815093204621.png)</p>
+<p>–&gt; blockIdx</p>
+<p>![image-20240815093310184](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815093310184.png)</p>
+<p>blockDim</p>
+<p>![image-20240815093338196](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815093338196.png)</p>
+<p>threadIdx</p>
+<p>![image-20240815094212543](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815094212543.png)</p>
+<p>–&gt; why we need divide into blocks</p>
+<p>![image-20240815094643352](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815094643352.png)</p>
+<p>–&gt; makes mapping easier</p>
+]]></content>
+      <categories>
+        <category>cuda</category>
+      </categories>
+      <tags>
+        <tag>cuda</tag>
+      </tags>
+  </entry>
 </search>
