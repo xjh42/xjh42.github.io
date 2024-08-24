@@ -20,15 +20,29 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="MLSys Day One">
-<meta property="og:url" content="http://example.com/tags/cuda/index.html">
+  <meta name="description" content="Theory Sequence Modeling given the definition of sequence modeling tasks, and give a list of example of it.          Recurrent Neural Networks Structure of the rnn model    How to train rnn  (backprop">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DLSys: Sequence Modeling and Recurrent Networks">
+<meta property="og:url" content="http://example.com/2024/08/24/DLSys-Sequence-Modeling-and-Recurrent-Networks/index.html">
 <meta property="og:site_name" content="MLSys Day One">
+<meta property="og:description" content="Theory Sequence Modeling given the definition of sequence modeling tasks, and give a list of example of it.          Recurrent Neural Networks Structure of the rnn model    How to train rnn  (backprop">
 <meta property="og:locale">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824172340647.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173117956.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173242176.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173452738.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173627222.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824224915657.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824225401207.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824230408241.png">
+<meta property="article:published_time" content="2024-08-24T09:22:54.000Z">
+<meta property="article:modified_time" content="2024-08-24T15:04:16.685Z">
 <meta property="article:author" content="xjh42">
+<meta property="article:tag" content="rnn">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824172340647.png">
 
-<link rel="canonical" href="http://example.com/tags/cuda/">
+<link rel="canonical" href="http://example.com/2024/08/24/DLSys-Sequence-Modeling-and-Recurrent-Networks/">
 
 
 <script id="page-configurations">
@@ -36,12 +50,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-Hans'
   };
 </script>
 
-  <title>Tag: cuda | MLSys Day One</title>
+  <title>DLSys: Sequence Modeling and Recurrent Networks | MLSys Day One</title>
   
 
 
@@ -154,51 +168,94 @@
         <div class="content-wrap">
           
 
-          <div class="content tag">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">cuda
-          <small>Tag</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/24/DLSys-Sequence-Modeling-and-Recurrent-Networks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="xjh42">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MLSys Day One">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          DLSys: Sequence Modeling and Recurrent Networks
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-08-24 17:22:54 / Modified: 23:04:16" itemprop="dateCreated datePublished" datetime="2024-08-24T17:22:54+08:00">2024-08-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/dlsys/" itemprop="url" rel="index"><span itemprop="name">dlsys</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2024</span>
+        <p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824172340647.png" alt="image-20240824172340647"></p>
+<h2 id="Theory"><a href="#Theory" class="headerlink" title="Theory"></a>Theory</h2><h3 id="Sequence-Modeling"><a href="#Sequence-Modeling" class="headerlink" title="Sequence Modeling"></a>Sequence Modeling</h3><p>given the definition of sequence modeling tasks, and give a list of example of it.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173117956.png" alt="image-20240824173117956"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173242176.png" alt="image-20240824173242176"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173452738.png" alt="image-20240824173452738"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173627222.png" alt="image-20240824173627222"></p>
+<h3 id="Recurrent-Neural-Networks"><a href="#Recurrent-Neural-Networks" class="headerlink" title="Recurrent Neural Networks"></a>Recurrent Neural Networks</h3><p>Structure of the rnn model</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824224915657.png" alt="image-20240824224915657"></p>
+<p>How to train rnn</p>
+<p>(backpropagation through time)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824225401207.png" alt="image-20240824225401207"></p>
+<p>Train rnn is hard:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824230408241.png" alt="image-20240824230408241"></p>
+<h3 id="LSTMs"><a href="#LSTMs" class="headerlink" title="LSTMs"></a>LSTMs</h3><h3 id="Beyond-“simple”-sequential-Models"><a href="#Beyond-“simple”-sequential-Models" class="headerlink" title="Beyond “simple” sequential Models"></a>Beyond “simple” sequential Models</h3>
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2024-08-15T09:03:46+08:00"
-              content="2024-08-15">
-          08-15
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/rnn/" rel="tag"># rnn</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2024/08/15/CUDA-Module-1-Parallel-Programming-Basics/" itemprop="url">
-            <span itemprop="name">CUDA Module 1: Parallel Programming Basics</span>
-          </a>
-      </div>
+        
 
-    </header>
+
+        
+      </footer>
+    
   </article>
-
-    </div>
-  </div>
   
   
-  
-
   
 
 
@@ -251,6 +308,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Theory"><span class="nav-number">1.</span> <span class="nav-text">Theory</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Sequence-Modeling"><span class="nav-number">1.1.</span> <span class="nav-text">Sequence Modeling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Recurrent-Neural-Networks"><span class="nav-number">1.2.</span> <span class="nav-text">Recurrent Neural Networks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LSTMs"><span class="nav-number">1.3.</span> <span class="nav-text">LSTMs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Beyond-%E2%80%9Csimple%E2%80%9D-sequential-Models"><span class="nav-number">1.4.</span> <span class="nav-text">Beyond “simple” sequential Models</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

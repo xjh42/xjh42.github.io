@@ -1,35 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>CUDA Module 1: Parallel Programming Basics</title>
-    <url>/2024/08/15/CUDA-Module-1-Parallel-Programming-Basics/</url>
-    <content><![CDATA[<p>PMPP ch2~4</p>
-<p>Ece408 2~5</p>
-<p>cuda modę 2</p>
-<h2 id="Introduction-to-Parallel-Computing-and-CUDA"><a href="#Introduction-to-Parallel-Computing-and-CUDA" class="headerlink" title="Introduction to Parallel Computing and CUDA"></a>Introduction to Parallel Computing and CUDA</h2><p>Basic CUDA Execution model</p>
-<p>![image-20240815091901873](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815091901873.png)</p>
-<p>—-&gt; how cuda manage threads</p>
-<p>![image-20240815092350781](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815092350781.png)</p>
-<p>![image-20240815092741008](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815092741008.png)</p>
-<p>logical structure of cuda</p>
-<p>![image-20240815093040013](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815093040013.png)</p>
-<p>gridDim</p>
-<p>![image-20240815093204621](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815093204621.png)</p>
-<p>–&gt; blockIdx</p>
-<p>![image-20240815093310184](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815093310184.png)</p>
-<p>blockDim</p>
-<p>![image-20240815093338196](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815093338196.png)</p>
-<p>threadIdx</p>
-<p>![image-20240815094212543](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815094212543.png)</p>
-<p>–&gt; why we need divide into blocks</p>
-<p>![image-20240815094643352](..&#x2F;..&#x2F;..&#x2F;Library&#x2F;Application Support&#x2F;typora-user-images&#x2F;image-20240815094643352.png)</p>
-<p>–&gt; makes mapping easier</p>
-]]></content>
+    <title>DLSys: Sequence Modeling and Recurrent Networks</title>
+    <url>/2024/08/24/DLSys-Sequence-Modeling-and-Recurrent-Networks/</url>
+    <content><![CDATA[<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824172340647.png" alt="image-20240824172340647"></p>
+<h2 id="Theory"><a href="#Theory" class="headerlink" title="Theory"></a>Theory</h2><h3 id="Sequence-Modeling"><a href="#Sequence-Modeling" class="headerlink" title="Sequence Modeling"></a>Sequence Modeling</h3><p>given the definition of sequence modeling tasks, and give a list of example of it.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173117956.png" alt="image-20240824173117956"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173242176.png" alt="image-20240824173242176"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173452738.png" alt="image-20240824173452738"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173627222.png" alt="image-20240824173627222"></p>
+<h3 id="Recurrent-Neural-Networks"><a href="#Recurrent-Neural-Networks" class="headerlink" title="Recurrent Neural Networks"></a>Recurrent Neural Networks</h3><p>Structure of the rnn model</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824224915657.png" alt="image-20240824224915657"></p>
+<p>How to train rnn</p>
+<p>(backpropagation through time)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824225401207.png" alt="image-20240824225401207"></p>
+<p>Train rnn is hard:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824230408241.png" alt="image-20240824230408241"></p>
+<h3 id="LSTMs"><a href="#LSTMs" class="headerlink" title="LSTMs"></a>LSTMs</h3><h3 id="Beyond-“simple”-sequential-Models"><a href="#Beyond-“simple”-sequential-Models" class="headerlink" title="Beyond “simple” sequential Models"></a>Beyond “simple” sequential Models</h3>]]></content>
       <categories>
-        <category>cuda</category>
+        <category>dlsys</category>
       </categories>
       <tags>
-        <tag>cuda</tag>
+        <tag>rnn</tag>
       </tags>
   </entry>
 </search>
