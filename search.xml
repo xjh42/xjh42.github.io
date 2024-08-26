@@ -3,36 +3,72 @@
   <entry>
     <title>DLSys: Sequence Modeling and Recurrent Networks</title>
     <url>/2024/08/24/DLSys-Sequence-Modeling-and-Recurrent-Networks/</url>
-    <content><![CDATA[<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824172340647.png" alt="image-20240824172340647"></p>
-<h2 id="Theory"><a href="#Theory" class="headerlink" title="Theory"></a>Theory</h2><h3 id="Sequence-Modeling"><a href="#Sequence-Modeling" class="headerlink" title="Sequence Modeling"></a>Sequence Modeling</h3><p>For the previous posts, we make prediction assuming input and output pairs $(x^i, y^i)$  </p>
-<p>given the definition of sequence modeling tasks, and give a list of example of it.</p>
+    <content><![CDATA[<h2 id="Theory"><a href="#Theory" class="headerlink" title="Theory"></a>Theory</h2><h3 id="Sequence-Modeling"><a href="#Sequence-Modeling" class="headerlink" title="Sequence Modeling"></a>Sequence Modeling</h3><p>For the previous posts, we make prediction assuming input and output pairs $(x^{(i)}, y^{(i)})$  is <strong>independent identically distributed(i.i.d)</strong>.It means the previous result donnot affect current result. In pratice, many cases where <strong>the input&#x2F;output pairs are given in a specific sequence</strong>, and we need to use the information about this sequence to help us make predictions.</p>
 <p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173117956.png" alt="image-20240824173117956"></p>
+<ul>
+<li><strong>Part of speech tagging</strong>: Given a sequence of words, determine the part of speech of each word.<strong>A word’s part of speech depends on the context in which it is being used</strong>, not just on the word itself.</li>
+</ul>
 <p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173242176.png" alt="image-20240824173242176"></p>
+<ul>
+<li><strong>speech to text</strong>: Given a audio signal (assume we even know the word boundaries, and map each segment to a fix-sized vector descriptor), determine the corresponding transcription. Again, context of the words is extremely important. Because many words’ pronunciation are same.  (see e.g., any bad speech recognition system that attempts to “wreck a nice beach”)</li>
+</ul>
 <p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173452738.png" alt="image-20240824173452738"></p>
+<ul>
+<li><strong>autoregressive prediction</strong>: A special case of sequential prediction where the elements to predict is the next element in the sequence.Common e.g., in time series forecasting, language modeling, and other use cases. We strongly rely on the context of the sentance to predict the next word.</li>
+</ul>
 <p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173627222.png" alt="image-20240824173627222"></p>
-<h3 id="Recurrent-Neural-Networks"><a href="#Recurrent-Neural-Networks" class="headerlink" title="Recurrent Neural Networks"></a>Recurrent Neural Networks</h3><p>Structure of the rnn model</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824224915657.png" alt="image-20240824224915657"></p>
-<p>How to train rnn</p>
-<p>(backpropagation through time)</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824225401207.png" alt="image-20240824225401207"></p>
-<p>Weight init is hard</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824230408241.png" alt="image-20240824230408241"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824230757117.png" alt="image-20240824230757117"></p>
-<p>relu is not a good activation function, sigmod and tanh</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824231517296.png" alt="image-20240824231517296"></p>
-<p>Gradient is large –&gt; gradient of next state is close to 0, information lost is still a problem</p>
-<p>–&gt; use list</p>
-<h3 id="LSTMs"><a href="#LSTMs" class="headerlink" title="LSTMs"></a>LSTMs</h3><p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824232533102.png" alt="image-20240824232533102"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824233048900.png" alt="image-20240824233048900"></p>
-<p>Cell state matters</p>
-<p>How to mantaion the previous information</p>
-<h3 id="Beyond-“simple”-sequential-Models"><a href="#Beyond-“simple”-sequential-Models" class="headerlink" title="Beyond “simple” sequential Models"></a>Beyond “simple” sequential Models</h3><p>Seq-to-seq model</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824234137554.png" alt="image-20240824234137554"></p>
-<p>Encoder–&gt;decoder</p>
-<p>Summary –&gt; input to decoder model</p>
-<p>Bi-RNN</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824234542152.png" alt="image-20240824234542152"></p>
-<p>use future information</p>
+<h3 id="Recurrent-Neural-Networks"><a href="#Recurrent-Neural-Networks" class="headerlink" title="Recurrent Neural Networks"></a>Recurrent Neural Networks</h3><p>Recurrent neural networks (RNNs) is a model to save the sequence model problem.  RNN maintain a <strong>hidden state</strong> over time, which is a function of the current input and previous hidden state. The previous hidden state contains the context of the previous inputs. Therefore, hidden state use the current input and a list of previous inputs to make a prediction. </p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826092058694.png" alt="image-20240826092058694" style="zoom:50%;" />
+$$
+h_t = f(W_{hh}h_{t-1} + W_{hx}x_t + b_h)
+$$
+
+<p>$$<br>y_t &#x3D; g(W_{yh} + b_y)<br>$$</p>
+<p>Where $f$ and $g$ are activation function. $W_{hh}$ , $W_{hx}$, $W_{yh}$ are weights, and $b_y$, $b_h$ are bias term. And $x \in R^n$,  $y \in R^{k}$, $h_t \in R^d$, $W_{hh} \in R^{d \times d}$, $W_{yh} \in R^{k \times d}$, $W_{hx} \in R^{d \times n}$, $b_h \in R^d$, $b_y \in R^k$.</p>
+<p>After we define the RNN model, the next question is how to train RNN? Given a sequence of inputs and target outputs$(x_1, …, x_T, y^{<em>}_1, …, y^{</em>}_T)$, we can train an RNN using backpropagation through time, which just involves “unrolling” the RNN over the length of the sequence, then relying mostly on <strong>autodiff</strong>. Without autodiff, we cannot solve the problem, because we cannot write the gradient of the rnn model.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">opt = Optimizer(params = (W_hh, W_hx, W_yh, b_h, b_y))</span><br><span class="line">h[<span class="number">0</span>] = <span class="number">0</span></span><br><span class="line">l = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> t = <span class="number">1</span>,...,T:</span><br><span class="line">  h[t] = f(W_hh * h[t-<span class="number">1</span>] + W_hx * x[t] + b_h)</span><br><span class="line">  y[t] = g(W_yh * h[t] + b_y)</span><br><span class="line">  l += Loss(y[t], y_star[t])</span><br><span class="line">l.backward()</span><br><span class="line">opt.step()</span><br></pre></td></tr></table></figure>
+
+
+
+<p>As you can see, the challenge for training RNNs is similar to that of training deep MLP networks, becasuse the sequence maybe long and the rnn is complicated.</p>
+<ul>
+<li><p><strong>Exploding activations&#x2F;gradients</strong>: Because we train RNNs on long sequences, if the weights&#x2F;activation of the RNN are scaled poorly, the hidden activations (and therefore also the gradients) will grow unboundedly with sequence length. For example, we use below initialization, the gradient will soon be NaN which cannot be stored in the 32-bit floating number.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826094116833.png" alt="image-20240826094116833"></p>
+</li>
+<li><p><strong>Vanishing activation&#x2F;gradients</strong>: Similarly, if weights are too small then information from the inputs will quickly decay with time (and it is precisely the “long range” dependencies that we would often like to model with sequence models). So the context of the previous  inputs will decay.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826094344394.png" alt="image-20240826094344394"></p>
+</li>
+</ul>
+<p>To solve <strong>Exploding activations&#x2F;gradients</strong> problem, we can use other activation functions. ReLU is a bad activation function because it can grow unboundedly. We can use sigmod and tanh activation function.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826094802233.png" alt="image-20240826094802233"></p>
+<p>But the problem <strong>Vanishing activation&#x2F;gradients</strong> still be unsolved. Creating large enough weights to not cause activations&#x2F;gradients to vanish requires being in <strong>the “saturating” regions of the activations</strong>, where gradients are very small ⟹ still have vanishing gradients</p>
+<p>How solve this problems? Use LSTM!</p>
+<h3 id="LSTMs"><a href="#LSTMs" class="headerlink" title="LSTMs"></a>LSTMs</h3><p>Long short term memory (LSTM) cells are a particular form of hidden unit update that avoids (some of) the problems of vanilla LSTMs. It make two changes to avoid vanishing activation&#x2F;gradients.</p>
+<ul>
+<li><p>Step 1:  Divide the hidden unit into two components, called (confusingly) the <strong>hidden state</strong> and the <strong>cell state</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826095305637.png" alt="image-20240826095305637"></p>
+<ul>
+<li><p>Step 2: Use a very specific formula to update the hidden state and cell state (throwing in some other names, like “forget gate”, “input gate”, “output gate” for good measure)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826095513339.png" alt="image-20240826095513339"></p>
+<p>where $i_t \in R^d$, $f_t \in R^d$,$g_t \in R^d$, $o_t \in R^d$, $W_{hh} \in R^{4d \times d}$, $h_t \in R^d$ , $W_{hx} \in R^{4d \times n}$</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>Why LSTM works? The factor of $f_t$ and $i_t$ can control the context information. Close to 0 –&gt; not mantain the context, Close 1 –&gt; context information will be untoched.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826100216569.png" alt="image-20240826100216569"></p>
+<h3 id="Beyond-“simple”-sequential-Models"><a href="#Beyond-“simple”-sequential-Models" class="headerlink" title="Beyond “simple” sequential Models"></a>Beyond “simple” sequential Models</h3><p>We’ll introduce a list of aplication of RNN.</p>
+<ul>
+<li><p><strong>Seq2Seq model</strong>: To give you a short glimpse of the kind of things you can do with RNNs&#x2F;LSTMs beyond “simple” sequence prediction, consider the task of <strong>trying to translate between languages</strong>. </p>
+<p>Can concatenate two RNNs together, one that “only” processes the sequence to create a final hidden state (i.e., no loss function, encoder); then a section that takes in this initial hidden state, and “only” generates a sequence(decoder). Why this model works? Because the translation task is not a one-one mapping problem.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826100555240.png" alt="image-20240826100555240"></p>
+<p>$h_5$ contains the summary of the context.</p>
+</li>
+<li><p><strong>Bidirectional RNNs</strong>: RNNs can use only the sequence information up until time $t$ to predict $y_t$.This is sometimes desirable (e.g., autoregressive models). But sometime undesirable (e.g., language translation where we want to use “whole” input sequence)</p>
+<p>Bi-directional RNNs stack a forwardrunning RNN with a backward-running RNN: information from the entire sequence to propagates to the hidden state. So we can use the full context to predict!</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826101002495.png" alt="image-20240826101002495"></p>
+</li>
+</ul>
 ]]></content>
       <categories>
         <category>dlsys</category>
