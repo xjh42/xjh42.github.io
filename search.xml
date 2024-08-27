@@ -12,12 +12,7 @@ previous result donnot affect current result. In pratice, many cases
 where <strong>the input/output pairs are given in a specific
 sequence</strong>, and we need to use the information about this
 sequence to help us make predictions.</p>
-<figure>
-<img
-src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173117956.png"
-alt="image-20240824173117956" />
-<figcaption aria-hidden="true">image-20240824173117956</figcaption>
-</figure>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173117956.png" alt="image-20240824173117956" style="zoom:67%;" /></p>
 <ul>
 <li><strong>Part of speech tagging</strong>: Given a sequence of words,
 determine the part of speech of each word.<strong>A word’s part of
@@ -219,6 +214,10 @@ alt="image-20240826101002495" />
 <figcaption aria-hidden="true">image-20240826101002495</figcaption>
 </figure></li>
 </ul>
+<h2 id="implementing-rnns">Implementing RNNs</h2>
+<p>Codelab notebook links: <a
+href="https://colab.research.google.com/drive/1c8fmSa1H9noi_1RJhFOksloEFNDrEmU7?usp=sharing">implementing
+RNNs</a></p>
 ]]></content>
       <categories>
         <category>dlsys</category>
