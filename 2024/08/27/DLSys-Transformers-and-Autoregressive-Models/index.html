@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Theory The two approaches to time series modeling Let’s recall our basic time series prediction task from the previous posts. More fundamentally, a time series prediction task is the task of predictin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DLSys: Transformers and Attention">
+<meta property="og:url" content="http://example.com/2024/08/27/DLSys-Transformers-and-Autoregressive-Models/index.html">
+<meta property="og:site_name" content="MLSys Day One">
+<meta property="og:description" content="Theory The two approaches to time series modeling Let’s recall our basic time series prediction task from the previous posts. More fundamentally, a time series prediction task is the task of predictin">
+<meta property="og:locale">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828130234284.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828130718884-20240828130724791.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828131152642.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828132255771.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829085656637.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829090838397.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829092012276.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829092949134.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829093117580.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829093229868.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094005050.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094241280.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094534849.png">
+<meta property="article:published_time" content="2024-08-27T01:52:23.000Z">
+<meta property="article:modified_time" content="2024-08-29T01:50:07.104Z">
+<meta property="article:author" content="xjh42">
+<meta property="article:tag" content="transformer">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828130234284.png">
+
+<link rel="canonical" href="http://example.com/2024/08/27/DLSys-Transformers-and-Autoregressive-Models/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>DLSys: Transformers and Attention | MLSys Day One</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MLSys Day One</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/27/DLSys-Transformers-and-Autoregressive-Models/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="xjh42">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MLSys Day One">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          DLSys: Transformers and Attention
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2024-08-27 09:52:23" itemprop="dateCreated datePublished" datetime="2024-08-27T09:52:23+08:00">2024-08-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-08-29 09:50:07" itemprop="dateModified" datetime="2024-08-29T09:50:07+08:00">2024-08-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/dlsys/" itemprop="url" rel="index"><span itemprop="name">dlsys</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="theory">Theory</h2>
+<h3 id="the-two-approaches-to-time-series-modeling">The two approaches
+to time series modeling</h3>
+<p>Let’s recall our basic time series prediction task from the previous
+posts. More fundamentally, a time series prediction task is the task of
+predicting: <span class="math display">\[
+y_{1:T}=f_\theta(x_{1:T})
+\]</span>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828130234284.png" alt="image-20240828130234284" style="zoom:50%;" /></p>
+<p>where <span class="math inline">\(y_t\)</span> can depend only on
+<span class="math inline">\(x_{1:t}\)</span>. There are mainly two
+approach to do so: <strong>latent state approach</strong> and
+<strong>direct prediction</strong>.</p>
+<h4 id="the-rnn-latent-state-approach">The RNN “latent state”
+approach</h4>
+<p>We have already seen the RNN approach to time series:
+<strong>maintain “latent state” <span class="math inline">\(h_t\)</span>
+that summarizes all information up until that point</strong>.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828130718884-20240828130724791.png" alt="image-20240828130718884" style="zoom: 33%;" /></p>
+<ul>
+<li><strong>Pros</strong>: Potentially “infinite” history, compact
+representation. It means the time series length is not limited and has
+low memory to store the previous context.</li>
+<li><strong>Cons</strong>: Long “compute path” between history and
+current time ⟹ vanishing / exploding gradients, hard to learn. A single
+state <span class="math inline">\(h_t\)</span> is hard to represent long
+context, easily lost the previous context.</li>
+</ul>
+<h4 id="the-direct-prediction-approach">The “direct prediction”
+approach</h4>
+<p>To avoid vanishing/exploding gradients(lose context/context is hard
+to store), we can also directly predict output <span
+class="math inline">\(y_t\)</span>: <span class="math display">\[
+y_t = f_\theta(x_{1:t})
+\]</span> <span class="math inline">\(f_\theta\)</span> must be a
+function that can make predictions of differently-sized inputs.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828131152642.png" alt="image-20240828131152642" style="zoom:33%;" /></p>
+<ul>
+<li><strong>Pros</strong>: Often can map from past to current state with
+shorter compute path. With a proper function <span
+class="math inline">\(f_\theta\)</span> , we can avoid
+vanishing/exploding gradients.</li>
+<li><strong>Cons</strong>: No compact state representation, finite
+history in practice.</li>
+</ul>
+<p>One of the most straightforward ways to specify the function <span
+class="math inline">\(f_\theta\)</span>: (fully) convolutional networks,
+a.k.a. temporal convolutional networks (TCNs). The main constraint is
+that <strong>the convolutions be causal</strong>: <span
+class="math inline">\(z^{i+1}_t\)</span> can only depend on <span
+class="math inline">\(z^{i}_{t-k:t}\)</span>.</p>
+<p>Many successful applications: e.g. WaveNet for speech generation (<a
+target="_blank" rel="noopener" href="https://deepmind.google/discover/blog/wavenet-a-generative-model-for-raw-audio/">van
+den Oord et al., 2016</a>)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828132255771.png" alt="image-20240828132255771" style="zoom:67%;" /></p>
+<p>Despite their simplicity, CNNs have a notable disadvantage for time
+series prediction: the receptive field of each convolution is usually
+relatively small ⟹ need deep networks to actually incorporate past
+information. For example, WaveNet can achive a receptive field of 16
+using 4 layer. For very long sequence, it will need very deep network.
+There are several solutions:</p>
+<ul>
+<li><strong>Increase kernel size</strong>: also increases the parameters
+of the network</li>
+<li><a
+target="_blank" rel="noopener" href="https://medium.com/@abhishekjainindore24/pooling-and-their-types-in-cnn-4a4b8a7a4611"><strong>Pooling
+layers</strong></a>: not as well suited to dense prediction, where we
+want to predict all of <span class="math inline">\(y_{1:T}\)</span>.
+We'll lose some predictions because pooling will decrease the size of
+input.(alose decrease the size of output)</li>
+<li><strong>Dilated convolutions</strong>: “Skips over” some past state
+/ inputs. But we'll lose some context which may be important.</li>
+</ul>
+<p>As we can see, CNN is not well suited for time series prediction.
+We'll introduce a new arch of network: transformer which will overcome
+the cons of CNN.</p>
+<h3 id="self-attention-and-transformers">Self-attention and
+Transformers</h3>
+<h4 id="self-attention">Self Attention</h4>
+<p>Let's first talk about the important part of transformer:
+<strong>Self Attention</strong>! “Attention” in deep networks generally
+refers to <strong>any mechanism where individual states are weighted and
+then combined</strong>.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829085656637.png" alt="image-20240829085656637" style="zoom:50%;" /></p>
+<p>Attention is used originally in RNNs when one wanted to combine
+latent states over all times in a more general manner than “just”
+looking at the last state. Let's define general attention in math: <span
+class="math display">\[
+z_t = \theta^Th_t^k
+\]</span></p>
+<p><span class="math display">\[
+w = softmax(z)
+\]</span></p>
+<p><span class="math display">\[
+\bar{h} = \sum_{t=1}^T(w_th_t^k)
+\]</span></p>
+<blockquote>
+<p>The <strong>softmax function</strong> converts a vector of <em>K</em>
+real numbers into a <a
+target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Probability_distribution">probability
+distribution</a> of <em>K</em> possible outcomes.</p>
+</blockquote>
+<p><strong>Self-attention</strong> refers to a particular form of
+attention mechanism. Given three inputs <span
+class="math inline">\(K,Q,V \in R^{T \times d}\)</span>, (“queries”,
+“keys”, “values”, in one of the least-meaningful semantic designations
+we have in deep learning).</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829090838397.png" alt="image-20240829090838397" /></p>
+<p>we define the self attention operation as: <span
+class="math display">\[
+SelfAttetion(Q,K,V)=softmax(\frac{QK^T}{d^{1/2}})V
+\]</span> Where the input is <span class="math inline">\(X \in R^{T
+\times n}, W_k \in W^{n \times d}, W_Q \in W^{n \times d}, W_V \in W^{n
+\times d}\)</span>, we can simple calculate <span
+class="math inline">\(Q, K, V\)</span> as follows: <span
+class="math display">\[
+Q = XW_Q
+\]</span></p>
+<p><span class="math display">\[
+K = XW_K
+\]</span></p>
+<p><span class="math display">\[
+V = XW_V
+\]</span></p>
+<p>Compare to the attention used in rnn, we use input to replace the
+hidden state <span class="math inline">\(h\)</span>.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829092012276.png" alt="image-20240829092012276" style="zoom:50%;" /></p>
+<p>Properties of self-attention:</p>
+<ul>
+<li>Invariant (really, equivariant) to permutations of the <span
+class="math inline">\(Q, K, V\)</span>matrices</li>
+<li>Allows influence between <span class="math inline">\(q_t,k_t,
+v_t\)</span>over all times without increase parameter size.(compare to
+CNN, in order to increase reception field, we need to increase kernel
+size --&gt; increase parameter size)</li>
+<li>Compute cost is <span class="math inline">\(O(T^2 + 2Td)\)</span>
+(cannot be easily reduced due to nonlinearity applied to full <span
+class="math inline">\(T \times T\)</span> matrix)</li>
+<li>softmax const <span class="math inline">\(T^2\)</span></li>
+<li>two matrix multiplication cost <span
+class="math inline">\(Td\)</span></li>
+</ul>
+<h4 id="transformer">Transformer</h4>
+<p>A simple transoformer block consist of self-attention mechanism and
+other network blocks.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829092949134.png" alt="image-20240829092949134" style="zoom:50%;" /></p>
+<p>In more detail, the Transformer block has the following form:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829093117580.png" alt="image-20240829093117580" style="zoom: 33%;" /></p>
+<p>The Transformer architecture uses a series of attention mechanisms
+(and feedfoward layers) to process a time series:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829093229868.png" alt="image-20240829093229868" style="zoom: 50%;" /></p>
+<p>Which can be form use math equation below: <span
+class="math display">\[
+Z^{(i+1)}=TransformerBlock(Z^{(i)})
+\]</span> All time steps (in practice, within a given time slice) are
+<strong>processed in parallel</strong>, avoids the need for sequential
+processing as in RNNs.</p>
+<p>We can apply the Transformer block to the “direct” prediction method
+for time series, instead of using a convolutional block.</p>
+<ul>
+<li>Pros:
+<ul>
+<li>Full receptive field within a single layer (i.e., can immediately
+use past data)</li>
+<li>Mixing over time doesn’t increase parameter count (unlike
+convolutions)</li>
+</ul></li>
+<li>Cons:
+<ul>
+<li>All outputs depend on all inputs (no good e.g., for autoregressive
+tasks) -- the latent cortex is more important.</li>
+<li>No ordering of data (remember that transformers are equivariant to
+permutations of the sequence)--the position masters.</li>
+</ul></li>
+</ul>
+<p>To solve the cons of transformer, we introduce two techniques:
+<strong>masked self-attention</strong>, and <strong>Positional
+encodings</strong>.</p>
+<h4 id="masked-self-attention">Masked self-attention</h4>
+<p>To solve the problem of “acausal” dependencies, we can mask the
+softmax operator to assign zero weight to any “future” time steps.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094005050.png" alt="image-20240829094005050" style="zoom: 50%;" /></p>
+<p>Note that even though technically this means we can “avoid” creating
+those entries in the attention matrix to being with, in practice it’s
+often faster to just form them then mask them out.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094241280.png" alt="image-20240829094241280" style="zoom:50%;" /></p>
+<h4 id="positional-encodings">Positional encodings</h4>
+<p>To solve the problem of “order invariance”, we can add a positional
+encoding to the input, which <strong>associates each input with its
+position in the sequence</strong>.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094534849.png" alt="image-20240829094534849" style="zoom:50%;" /></p>
+<p>and where <span class="math inline">\(w_i, i = 1,...,n\)</span> is
+typically chosen according to a logarithmic schedule. Really, add
+positional encoding to d-dimensional projection of <span
+class="math inline">\(T\)</span></p>
+<h3 id="transformers-beyond-time-series">Transformers beyond time
+series</h3>
+<p>Recent work has observed that transformer blocks are extremely
+powerful beyond just time series</p>
+<ul>
+<li>Vision Transformers: Apply transformer to image (represented by a
+collection of patch embeddings), works better than CNNs for large data
+sets</li>
+<li>Graph Transformers: Capture graph structure in the attention
+matrix</li>
+</ul>
+<p>In all cases, some challenges are:</p>
+<ul>
+<li>How to represent data such that <span
+class="math inline">\(O(T^2)\)</span> operations are feasible</li>
+<li>How to form positional embeddings</li>
+<li>How to form the mask matrix</li>
+</ul>
+<h2 id="implementation">Implementation</h2>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/dlsyscourse/public_notebooks/blob/main/transformer_implementation.ipynb">reference
+implementation</a></p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828090529976.png"
+alt="image-20240828090529976" />
+<figcaption aria-hidden="true">image-20240828090529976</figcaption>
+</figure>
+<p>default matrix multiplication --&gt; single multi plus reshape</p>
+<p>Batch matrix multiplication --&gt; for loop + multi</p>
+<p>Multi-head attention ??? why</p>
+<p>more batches lower inner product</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828093533059.png"
+alt="image-20240828093533059" />
+<figcaption aria-hidden="true">image-20240828093533059</figcaption>
+</figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/transformer/" rel="tag"># transformer</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/08/24/DLSys-Sequence-Modeling-and-Recurrent-Networks/" rel="prev" title="DLSys: Sequence Modeling and Recurrent Networks">
+      <i class="fa fa-chevron-left"></i> DLSys: Sequence Modeling and Recurrent Networks
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#theory"><span class="nav-number">1.</span> <span class="nav-text">Theory</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#the-two-approaches-to-time-series-modeling"><span class="nav-number">1.1.</span> <span class="nav-text">The two approaches
+to time series modeling</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#the-rnn-latent-state-approach"><span class="nav-number">1.1.1.</span> <span class="nav-text">The RNN “latent state”
+approach</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#the-direct-prediction-approach"><span class="nav-number">1.1.2.</span> <span class="nav-text">The “direct prediction”
+approach</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#self-attention-and-transformers"><span class="nav-number">1.2.</span> <span class="nav-text">Self-attention and
+Transformers</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#self-attention"><span class="nav-number">1.2.1.</span> <span class="nav-text">Self Attention</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#transformer"><span class="nav-number">1.2.2.</span> <span class="nav-text">Transformer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#masked-self-attention"><span class="nav-number">1.2.3.</span> <span class="nav-text">Masked self-attention</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#positional-encodings"><span class="nav-number">1.2.4.</span> <span class="nav-text">Positional encodings</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#transformers-beyond-time-series"><span class="nav-number">1.3.</span> <span class="nav-text">Transformers beyond time
+series</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#implementation"><span class="nav-number">2.</span> <span class="nav-text">Implementation</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">xjh42</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xjh42</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
