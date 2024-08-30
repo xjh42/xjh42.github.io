@@ -164,6 +164,85 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/30/DLSys-Convolutional-Networks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="xjh42">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MLSys Day One">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/08/30/DLSys-Convolutional-Networks/" class="post-title-link" itemprop="url">DLSys: Convolutional Networks</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-08-30 09:38:36 / Modified: 13:22:31" itemprop="dateCreated datePublished" datetime="2024-08-30T09:38:36+08:00">2024-08-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/dlsys/" itemprop="url" rel="index"><span itemprop="name">dlsys</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          In this post, we’ll introduce Convolutional Networks(CNN) with large application.
+
+Theory
+Convolution Operator
+So far we only consider full connected networks, which treat input images as vectors(size is $n$), and use a large weight matrix($W \in R^{n \times d}$) to map input vector to a feature vector. This creates a substantial problem as we atte
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/08/30/DLSys-Convolutional-Networks/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/27/DLSys-Transformers-and-Autoregressive-Models/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -220,9 +299,13 @@
       
           Theory
 The two approaches to time series modeling
-Let’s recall our basic time series prediction task from the previous posts. More fundamentally, a time series prediction task is the task of predicting: \[ y_{1:T}=f_\theta(x_{1:T}) \]
+Let’s recall our basic time series prediction task from the previous posts. More fundamentally, a time series prediction task is the task of predicting:
+$$
+y_{1:T}=f_\theta(x_{1:T})
+$$
 
-where \(y_t\) can depend only on\(x_{1:t}\). There are mainly two approach to do so: latent state approach anddire
+
+where $y_t$ can depend only on $x_{1:t}$. There are mainly two approach to do so: latent state approach and direc
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/08/27/DLSys-Transformers-and-Autoregressive-Models/#more" rel="contents">
@@ -305,7 +388,7 @@ where \(y_t\) can depend only on\(x_{1:t}\). There are mainly two approach to do
       
           Theory
 Sequence Modeling
-For the previous posts, we make prediction assuming input and output pairs \((x^{(i)}, y^{(i)})\) isindependent identically distributed(i.i.d).It means the previous result donnot affect current result. In pratice, many cases where the input/output pairs are given in a specific sequence, and we need to use the information ab
+For the previous posts, we make prediction assuming input and output pairs $(x^{(i)}, y^{(i)})$ is independent identically distributed(i.i.d).It means the previous result donnot affect current result. In pratice, many cases where the input/output pairs are given in a specific sequence, and we need to use the information abo
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/08/24/DLSys-Sequence-Modeling-and-Recurrent-Networks/#more" rel="contents">
@@ -394,7 +477,7 @@ For the previous posts, we make prediction assuming input and output pairs \((x^
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

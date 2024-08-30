@@ -1,224 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>DLSys: Transformers and Attention</title>
-    <url>/2024/08/27/DLSys-Transformers-and-Autoregressive-Models/</url>
-    <content><![CDATA[<h2 id="theory">Theory</h2>
-<h3 id="the-two-approaches-to-time-series-modeling">The two approaches
-to time series modeling</h3>
-<p>Let’s recall our basic time series prediction task from the previous
-posts. More fundamentally, a time series prediction task is the task of
-predicting: <span class="math display">\[
-y_{1:T}=f_\theta(x_{1:T})
-\]</span>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828130234284.png" alt="image-20240828130234284" style="zoom:50%;" /></p>
-<p>where <span class="math inline">\(y_t\)</span> can depend only on
-<span class="math inline">\(x_{1:t}\)</span>. There are mainly two
-approach to do so: <strong>latent state approach</strong> and
-<strong>direct prediction</strong>.</p>
-<h4 id="the-rnn-latent-state-approach">The RNN “latent state”
-approach</h4>
-<p>We have already seen the RNN approach to time series:
-<strong>maintain “latent state” <span class="math inline">\(h_t\)</span>
-that summarizes all information up until that point</strong>.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828130718884-20240828130724791.png" alt="image-20240828130718884" style="zoom: 33%;" /></p>
+    <title>DLSys: Convolutional Networks</title>
+    <url>/2024/08/30/DLSys-Convolutional-Networks/</url>
+    <content><![CDATA[<p>In this post, we’ll introduce Convolutional Networks(CNN) with large application.</p>
+<h1 id="Theory"><a href="#Theory" class="headerlink" title="Theory"></a>Theory</h1><h2 id="Convolution-Operator"><a href="#Convolution-Operator" class="headerlink" title="Convolution Operator"></a>Convolution Operator</h2><p>So far we only consider full connected networks, <strong>which treat input images as vectors(size is $n$), and use a large weight matrix($W \in R^{n \times d}$) to map input vector to a feature vector</strong>. This creates a substantial problem as we attempt to handle larger images: a 256x256 RGB image ⟹ ~200K dimensional input ⟹ mapping to 1000 dimensional hidden vector requires 200M parameters (for a single layer)</p>
+<p>Another problem is this operation <strong>does not capture any of the “intuitive” invariances that we expect to have in images</strong> (e.g., shifting image one pixel leads to very different next layer) It’s means we use full image pixels to predict single value in next layer.</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830095205371.png" alt="image-20240830095205371" style="zoom:67%;" />
+
+<p>We’ll introduce a new operator to network: convolution to simplify deep networks.</p>
+<h3 id="Convolutions-can-“Simplify”-Deep-Networks"><a href="#Convolutions-can-“Simplify”-Deep-Networks" class="headerlink" title="Convolutions can “Simplify” Deep Networks"></a>Convolutions can “Simplify” Deep Networks</h3><p>Convolutions combine two ideas that are well-suited to processing images </p>
 <ul>
-<li><strong>Pros</strong>: Potentially “infinite” history, compact
-representation. It means the time series length is not limited and has
-low memory to store the previous context.</li>
-<li><strong>Cons</strong>: Long “compute path” between history and
-current time ⟹ vanishing / exploding gradients, hard to learn. A single
-state <span class="math inline">\(h_t\)</span> is hard to represent long
-context, easily lost the previous context.</li>
+<li>Require that <strong>activations between layers occur only in a “local” manner</strong>, and treat hidden layers themselves as spatial images </li>
+<li>Share weights across all spatial locations</li>
 </ul>
-<h4 id="the-direct-prediction-approach">The “direct prediction”
-approach</h4>
-<p>To avoid vanishing/exploding gradients(lose context/context is hard
-to store), we can also directly predict output <span
-class="math inline">\(y_t\)</span>: <span class="math display">\[
-y_t = f_\theta(x_{1:t})
-\]</span> <span class="math inline">\(f_\theta\)</span> must be a
-function that can make predictions of differently-sized inputs.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828131152642.png" alt="image-20240828131152642" style="zoom:33%;" /></p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830095715641.png" alt="image-20240830095715641" style="zoom:50%;" />
+
+<p>Compare to full connected network, convolution can:</p>
 <ul>
-<li><strong>Pros</strong>: Often can map from past to current state with
-shorter compute path. With a proper function <span
-class="math inline">\(f_\theta\)</span> , we can avoid
-vanishing/exploding gradients.</li>
-<li><strong>Cons</strong>: No compact state representation, finite
-history in practice.</li>
+<li>Drastically reduces the parameter count.(256x256 grayscale image ⟹ 256x256 single-channel hidden layer: 4 billion parameters in fully connected network to 9 parameters in 3x3 convolution)</li>
+<li>Captures (some) “natural” invariances (Shifting input image one pixel to the right shifts creates a hidden shifts the hidden unit “image”)</li>
 </ul>
-<p>One of the most straightforward ways to specify the function <span
-class="math inline">\(f_\theta\)</span>: (fully) convolutional networks,
-a.k.a. temporal convolutional networks (TCNs). The main constraint is
-that <strong>the convolutions be causal</strong>: <span
-class="math inline">\(z^{i+1}_t\)</span> can only depend on <span
-class="math inline">\(z^{i}_{t-k:t}\)</span>.</p>
-<p>Many successful applications: e.g. WaveNet for speech generation (<a
-href="https://deepmind.google/discover/blog/wavenet-a-generative-model-for-raw-audio/">van
-den Oord et al., 2016</a>)</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828132255771.png" alt="image-20240828132255771" style="zoom:67%;" /></p>
-<p>Despite their simplicity, CNNs have a notable disadvantage for time
-series prediction: the receptive field of each convolution is usually
-relatively small ⟹ need deep networks to actually incorporate past
-information. For example, WaveNet can achive a receptive field of 16
-using 4 layer. For very long sequence, it will need very deep network.
-There are several solutions:</p>
+<p>Let’s see how convolution works in details</p>
+<h3 id="Convolutions-in-detail"><a href="#Convolutions-in-detail" class="headerlink" title="Convolutions in detail"></a>Convolutions in detail</h3><p>Convolutions are a basic primitive in many computer vision and image processing algorithms. Convolution operator is to <strong>“slide” the weights $k \times k$ weight $w$  (called a filter, with kernel size $k$) over the image to produce a new image, written $y &#x3D; z * w$</strong>.</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830100303185.png" alt="image-20240830100303185" style="zoom: 33%;" />
+
+<p>let’s see how to compute $y_{11}$:</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830124621705.png" alt="image-20240830124621705" style="zoom: 33%;" />
+
+<p>The rest value of $y$ is calculated similarly.</p>
+<h3 id="Convolutions-in-Image-Processing"><a href="#Convolutions-in-Image-Processing" class="headerlink" title="Convolutions in Image Processing"></a>Convolutions in Image Processing</h3><p>Convolutions (typically with prespecified filters) are a common operation in many computer vision applications: convolution networks just move to learned filters.</p>
+<p>For conditional image programming, we use predefined filter, like Gasssian Filter, Image gradient Filter.</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830124932921.png" alt="image-20240830124932921" style="zoom: 33%;" />
+
+<h3 id="Convolutions-in-deep-networks"><a href="#Convolutions-in-deep-networks" class="headerlink" title="Convolutions in deep networks"></a>Convolutions in deep networks</h3><p>Convolutions in deep networks are virtually always multi-channel convolutions: <strong>map multi-channel (e.g., RGB) inputs to multi-channel hidden units</strong>. Multi-channel convolutions contain a convolutional filter for each input-output channel pair, single output channel is sum of convolutions over all input channels. It shows below.</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830125227168.png" alt="image-20240830125227168" style="zoom: 50%;" />
+
+<p>Let’s see how to define it in math:</p>
 <ul>
-<li><strong>Increase kernel size</strong>: also increases the parameters
-of the network</li>
-<li><a
-href="https://medium.com/@abhishekjainindore24/pooling-and-their-types-in-cnn-4a4b8a7a4611"><strong>Pooling
-layers</strong></a>: not as well suited to dense prediction, where we
-want to predict all of <span class="math inline">\(y_{1:T}\)</span>.
-We'll lose some predictions because pooling will decrease the size of
-input.(alose decrease the size of output)</li>
-<li><strong>Dilated convolutions</strong>: “Skips over” some past state
-/ inputs. But we'll lose some context which may be important.</li>
+<li>$x \in R^{h \times w \times c_{in}}$ denotes $c_{in}$ channel, size $h \times w$ image input</li>
+<li>$z \in R^{h \times w \times c_{out}}$ denotes $c_{out}$ channel, size $h \times w$ image out</li>
+<li>$W \in R^{c_{in} \times c_{out} \times k \times k}$ (order 4 tensor) denotes convolutional filter</li>
 </ul>
-<p>As we can see, CNN is not well suited for time series prediction.
-We'll introduce a new arch of network: transformer which will overcome
-the cons of CNN.</p>
-<h3 id="self-attention-and-transformers">Self-attention and
-Transformers</h3>
-<h4 id="self-attention">Self Attention</h4>
-<p>Let's first talk about the important part of transformer:
-<strong>Self Attention</strong>! “Attention” in deep networks generally
-refers to <strong>any mechanism where individual states are weighted and
-then combined</strong>.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829085656637.png" alt="image-20240829085656637" style="zoom:50%;" /></p>
-<p>Attention is used originally in RNNs when one wanted to combine
-latent states over all times in a more general manner than “just”
-looking at the last state. Let's define general attention in math: <span
-class="math display">\[
-z_t = \theta^Th_t^k
-\]</span></p>
-<p><span class="math display">\[
-w = softmax(z)
-\]</span></p>
-<p><span class="math display">\[
-\bar{h} = \sum_{t=1}^T(w_th_t^k)
-\]</span></p>
-<blockquote>
-<p>The <strong>softmax function</strong> converts a vector of <em>K</em>
-real numbers into a <a
-href="https://en.wikipedia.org/wiki/Probability_distribution">probability
-distribution</a> of <em>K</em> possible outcomes.</p>
-</blockquote>
-<p><strong>Self-attention</strong> refers to a particular form of
-attention mechanism. Given three inputs <span
-class="math inline">\(K,Q,V \in R^{T \times d}\)</span>, (“queries”,
-“keys”, “values”, in one of the least-meaningful semantic designations
-we have in deep learning).</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829090838397.png" alt="image-20240829090838397" /></p>
-<p>we define the self attention operation as: <span
-class="math display">\[
-SelfAttetion(Q,K,V)=softmax(\frac{QK^T}{d^{1/2}})V
-\]</span> Where the input is <span class="math inline">\(X \in R^{T
-\times n}, W_k \in W^{n \times d}, W_Q \in W^{n \times d}, W_V \in W^{n
-\times d}\)</span>, we can simple calculate <span
-class="math inline">\(Q, K, V\)</span> as follows: <span
-class="math display">\[
-Q = XW_Q
-\]</span></p>
-<p><span class="math display">\[
-K = XW_K
-\]</span></p>
-<p><span class="math display">\[
-V = XW_V
-\]</span></p>
-<p>Compare to the attention used in rnn, we use input to replace the
-hidden state <span class="math inline">\(h\)</span>.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829092012276.png" alt="image-20240829092012276" style="zoom:50%;" /></p>
-<p>Properties of self-attention:</p>
+<p>$$<br>z[:,:,s] &#x3D; \sum_{r&#x3D;1}^{c_{in}}{x[:,:,r] * W[r,s,:,:]}<br>$$</p>
+<p>The math equation is hard to understand. There is, in my view, a more intuitive way to think about multi-channel convolutions: <strong>they are a generalization of traditional convolutions with scalar multiplications replaced by matrix-vector products.</strong></p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830130039529.png" alt="image-20240830130039529" style="zoom:80%;" />
+
+<h2 id="Elements-of-Practical-Convolutions"><a href="#Elements-of-Practical-Convolutions" class="headerlink" title="Elements of Practical Convolutions"></a>Elements of Practical Convolutions</h2><p>Naive convolution is hard to fit different condition. So there are serveral techniques to make convolution more practical.</p>
+<h3 id="Padding"><a href="#Padding" class="headerlink" title="Padding"></a>Padding</h3><p>“Naïve” convolutions produce a smaller output than input image. If we want to get a same resolution image, we need use padding technique.Be careful, padding is only work for <strong>odd kernel size</strong>.</p>
+<p>For (odd) kernel size $k$,  pad input with $(k-1)&#x2F;2$ zeros on all sides, results in an output that is the same size as the input</p>
 <ul>
-<li>Invariant (really, equivariant) to permutations of the <span
-class="math inline">\(Q, K, V\)</span>matrices</li>
-<li>Allows influence between <span class="math inline">\(q_t,k_t,
-v_t\)</span>over all times without increase parameter size.(compare to
-CNN, in order to increase reception field, we need to increase kernel
-size --&gt; increase parameter size)</li>
-<li>Compute cost is <span class="math inline">\(O(T^2 + 2Td)\)</span>
-(cannot be easily reduced due to nonlinearity applied to full <span
-class="math inline">\(T \times T\)</span> matrix)</li>
-<li>softmax const <span class="math inline">\(T^2\)</span></li>
-<li>two matrix multiplication cost <span
-class="math inline">\(Td\)</span></li>
+<li><p>There are serval variants like <strong>circular padding</strong>, <strong>padding with mean values</strong>, etc</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830130634789.png" alt="image-20240830130634789" style="zoom:80%;" /></li>
 </ul>
-<h4 id="transformer">Transformer</h4>
-<p>A simple transoformer block consist of self-attention mechanism and
-other network blocks.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829092949134.png" alt="image-20240829092949134" style="zoom:50%;" /></p>
-<p>In more detail, the Transformer block has the following form:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829093117580.png" alt="image-20240829093117580" style="zoom: 33%;" /></p>
-<p>The Transformer architecture uses a series of attention mechanisms
-(and feedfoward layers) to process a time series:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829093229868.png" alt="image-20240829093229868" style="zoom: 50%;" /></p>
-<p>Which can be form use math equation below: <span
-class="math display">\[
-Z^{(i+1)}=TransformerBlock(Z^{(i)})
-\]</span> All time steps (in practice, within a given time slice) are
-<strong>processed in parallel</strong>, avoids the need for sequential
-processing as in RNNs.</p>
-<p>We can apply the Transformer block to the “direct” prediction method
-for time series, instead of using a convolutional block.</p>
+<h3 id="Strided-Convolutions-Pooling"><a href="#Strided-Convolutions-Pooling" class="headerlink" title="Strided Convolutions &#x2F; Pooling"></a>Strided Convolutions &#x2F; Pooling</h3><p>Given input matrix and filter, convolution output a fixed-size of output matrix,  don’t naively allow for representations at different “resolutions”. If you want to a self-defined size of output matrix, you can use either stride convolution or pooling techniques.</p>
 <ul>
-<li>Pros:
-<ul>
-<li>Full receptive field within a single layer (i.e., can immediately
-use past data)</li>
-<li>Mixing over time doesn’t increase parameter count (unlike
-convolutions)</li>
-</ul></li>
-<li>Cons:
-<ul>
-<li>All outputs depend on all inputs (no good e.g., for autoregressive
-tasks) -- the latent cortex is more important.</li>
-<li>No ordering of data (remember that transformers are equivariant to
-permutations of the sequence)--the position masters.</li>
-</ul></li>
+<li><p><strong>Pooling</strong> : incorporate max or average pooling layers to aggregate information</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830131034673.png" alt="image-20240830131034673" style="zoom:50%;" />
+</li>
+<li><p><strong>Strided Convolutions:</strong> slide convolutional filter over image in increments &gt;1 (&#x3D; stride)</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830131143353.png" alt="image-20240830131143353" style="zoom:50%;" />
+
+<h3 id="Grouped-Convolutions"><a href="#Grouped-Convolutions" class="headerlink" title="Grouped Convolutions"></a>Grouped Convolutions</h3><p> For large numbers of input&#x2F;output channels, filters can still have <strong>a large number of weights</strong>, can lead to <strong>overfitting + slow computation</strong>.</p>
+<p>To solve this,  we can group together channels, so that **groups of channels in output only depend on corresponding groups of channels in input **(equivalently, enforce filter weight matrices to be block-diagonal)</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830131419161.png" alt="image-20240830131419161" style="zoom:50%;" />
+
+<p>Given a simple example below, we can reduce filter parameter size from $R^{3 \times 3 \times k \times k}$ to $R^{ k \times k}$.</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830131952146.png" alt="image-20240830131952146" style="zoom: 50%;" />
+
+<h3 id="Dilations"><a href="#Dilations" class="headerlink" title="Dilations"></a>Dilations</h3><p> Convolutions each have a <strong>relatively small receptive field size</strong>. We’ll lose the global context of the image.We can use dilation to solve this problem. </p>
+<p>Dilate (spread out) convolution filter, so that it covers more of the image; note that getting an image of the same size again requires adding more padding.</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830132217024.png" alt="image-20240830132217024" style="zoom:80%;" /></li>
 </ul>
-<p>To solve the cons of transformer, we introduce two techniques:
-<strong>masked self-attention</strong>, and <strong>Positional
-encodings</strong>.</p>
-<h4 id="masked-self-attention">Masked self-attention</h4>
-<p>To solve the problem of “acausal” dependencies, we can mask the
-softmax operator to assign zero weight to any “future” time steps.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094005050.png" alt="image-20240829094005050" style="zoom: 50%;" /></p>
-<p>Note that even though technically this means we can “avoid” creating
-those entries in the attention matrix to being with, in practice it’s
-often faster to just form them then mask them out.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094241280.png" alt="image-20240829094241280" style="zoom:50%;" /></p>
-<h4 id="positional-encodings">Positional encodings</h4>
-<p>To solve the problem of “order invariance”, we can add a positional
-encoding to the input, which <strong>associates each input with its
-position in the sequence</strong>.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094534849.png" alt="image-20240829094534849" style="zoom:50%;" /></p>
-<p>and where <span class="math inline">\(w_i, i = 1,...,n\)</span> is
-typically chosen according to a logarithmic schedule. Really, add
-positional encoding to d-dimensional projection of <span
-class="math inline">\(T\)</span></p>
-<h3 id="transformers-beyond-time-series">Transformers beyond time
-series</h3>
-<p>Recent work has observed that transformer blocks are extremely
-powerful beyond just time series</p>
-<ul>
-<li>Vision Transformers: Apply transformer to image (represented by a
-collection of patch embeddings), works better than CNNs for large data
-sets</li>
-<li>Graph Transformers: Capture graph structure in the attention
-matrix</li>
-</ul>
-<p>In all cases, some challenges are:</p>
-<ul>
-<li>How to represent data such that <span
-class="math inline">\(O(T^2)\)</span> operations are feasible</li>
-<li>How to form positional embeddings</li>
-<li>How to form the mask matrix</li>
-</ul>
-<h2 id="implementation">Implementation</h2>
-<p>The runnable colab implementation is <a
-href="https://colab.research.google.com/drive/1sSkoJhexTDEgdBahAIm2SeV0Eqc0frj2?usp=sharing">here</a></p>
+<h2 id="Differentiating-Convolutions"><a href="#Differentiating-Convolutions" class="headerlink" title="Differentiating Convolutions"></a>Differentiating Convolutions</h2><h1 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h1><p>The reference implementation is <a href="https://colab.research.google.com/drive/1N6MtkNXq6QOpGYhXTokOjWvkF3Ff9i8Z?usp=sharing">here</a></p>
 ]]></content>
       <categories>
         <category>dlsys</category>
@@ -230,227 +84,192 @@ href="https://colab.research.google.com/drive/1sSkoJhexTDEgdBahAIm2SeV0Eqc0frj2?
   <entry>
     <title>DLSys: Sequence Modeling and Recurrent Networks</title>
     <url>/2024/08/24/DLSys-Sequence-Modeling-and-Recurrent-Networks/</url>
-    <content><![CDATA[<h2 id="theory">Theory</h2>
-<h3 id="sequence-modeling">Sequence Modeling</h3>
-<p>For the previous posts, we make prediction assuming input and output
-pairs <span class="math inline">\((x^{(i)}, y^{(i)})\)</span> is
-<strong>independent identically distributed(i.i.d)</strong>.It means the
-previous result donnot affect current result. In pratice, many cases
-where <strong>the input/output pairs are given in a specific
-sequence</strong>, and we need to use the information about this
-sequence to help us make predictions.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173117956.png" alt="image-20240824173117956" style="zoom:67%;" /></p>
+    <content><![CDATA[<h2 id="Theory"><a href="#Theory" class="headerlink" title="Theory"></a>Theory</h2><h3 id="Sequence-Modeling"><a href="#Sequence-Modeling" class="headerlink" title="Sequence Modeling"></a>Sequence Modeling</h3><p>For the previous posts, we make prediction assuming input and output pairs $(x^{(i)}, y^{(i)})$  is <strong>independent identically distributed(i.i.d)</strong>.It means the previous result donnot affect current result. In pratice, many cases where <strong>the input&#x2F;output pairs are given in a specific sequence</strong>, and we need to use the information about this sequence to help us make predictions.</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173117956.png" alt="image-20240824173117956" style="zoom:67%;" />
+
 <ul>
-<li><strong>Part of speech tagging</strong>: Given a sequence of words,
-determine the part of speech of each word.<strong>A word’s part of
-speech depends on the context in which it is being used</strong>, not
-just on the word itself.</li>
+<li><strong>Part of speech tagging</strong>: Given a sequence of words, determine the part of speech of each word.<strong>A word’s part of speech depends on the context in which it is being used</strong>, not just on the word itself.</li>
 </ul>
-<figure>
-<img
-src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173242176.png"
-alt="image-20240824173242176" />
-<figcaption aria-hidden="true">image-20240824173242176</figcaption>
-</figure>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173242176.png" alt="image-20240824173242176"></p>
 <ul>
-<li><strong>speech to text</strong>: Given a audio signal (assume we
-even know the word boundaries, and map each segment to a fix-sized
-vector descriptor), determine the corresponding transcription. Again,
-context of the words is extremely important. Because many words'
-pronunciation are same. (see e.g., any bad speech recognition system
-that attempts to “wreck a nice beach”)</li>
+<li><strong>speech to text</strong>: Given a audio signal (assume we even know the word boundaries, and map each segment to a fix-sized vector descriptor), determine the corresponding transcription. Again, context of the words is extremely important. Because many words’ pronunciation are same.  (see e.g., any bad speech recognition system that attempts to “wreck a nice beach”)</li>
 </ul>
-<figure>
-<img
-src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173452738.png"
-alt="image-20240824173452738" />
-<figcaption aria-hidden="true">image-20240824173452738</figcaption>
-</figure>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173452738.png" alt="image-20240824173452738"></p>
 <ul>
-<li><strong>autoregressive prediction</strong>: A special case of
-sequential prediction where the elements to predict is the next element
-in the sequence.Common e.g., in time series forecasting, language
-modeling, and other use cases. We strongly rely on the context of the
-sentance to predict the next word.</li>
+<li><strong>autoregressive prediction</strong>: A special case of sequential prediction where the elements to predict is the next element in the sequence.Common e.g., in time series forecasting, language modeling, and other use cases. We strongly rely on the context of the sentance to predict the next word.</li>
 </ul>
-<figure>
-<img
-src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173627222.png"
-alt="image-20240824173627222" />
-<figcaption aria-hidden="true">image-20240824173627222</figcaption>
-</figure>
-<h3 id="recurrent-neural-networks">Recurrent Neural Networks</h3>
-<p>Recurrent neural networks (RNNs) is a model to save the sequence
-model problem. RNN maintain a <strong>hidden state</strong> over time,
-which is a function of the current input and previous hidden state. The
-previous hidden state contains the context of the previous inputs.
-Therefore, hidden state use the current input and a list of previous
-inputs to make a prediction.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826092058694.png" alt="image-20240826092058694" style="zoom:50%;" />
-<span class="math display">\[
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240824173627222.png" alt="image-20240824173627222"></p>
+<h3 id="Recurrent-Neural-Networks"><a href="#Recurrent-Neural-Networks" class="headerlink" title="Recurrent Neural Networks"></a>Recurrent Neural Networks</h3><p>Recurrent neural networks (RNNs) is a model to save the sequence model problem.  RNN maintain a <strong>hidden state</strong> over time, which is a function of the current input and previous hidden state. The previous hidden state contains the context of the previous inputs. Therefore, hidden state use the current input and a list of previous inputs to make a prediction. </p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826092058694.png" alt="image-20240826092058694" style="zoom:50%;" />
+$$
 h_t = f(W_{hh}h_{t-1} + W_{hx}x_t + b_h)
-\]</span></p>
-<p><span class="math display">\[
-y_t = g(W_{yh} + b_y)
-\]</span></p>
-<p>Where <span class="math inline">\(f\)</span> and <span
-class="math inline">\(g\)</span> are activation function. <span
-class="math inline">\(W_{hh}\)</span> , <span
-class="math inline">\(W_{hx}\)</span>, <span
-class="math inline">\(W_{yh}\)</span> are weights, and <span
-class="math inline">\(b_y\)</span>, <span
-class="math inline">\(b_h\)</span> are bias term. And <span
-class="math inline">\(x \in R^n\)</span>, <span class="math inline">\(y
-\in R^{k}\)</span>, <span class="math inline">\(h_t \in R^d\)</span>,
-<span class="math inline">\(W_{hh} \in R^{d \times d}\)</span>, <span
-class="math inline">\(W_{yh} \in R^{k \times d}\)</span>, <span
-class="math inline">\(W_{hx} \in R^{d \times n}\)</span>, <span
-class="math inline">\(b_h \in R^d\)</span>, <span
-class="math inline">\(b_y \in R^k\)</span>.</p>
-<p>After we define the RNN model, the next question is how to train RNN?
-Given a sequence of inputs and target outputs<span
-class="math inline">\((x_1, ..., x_T, y^{*}_1, ..., y^{*}_T)\)</span>,
-we can train an RNN using backpropagation through time, which just
-involves “unrolling” the RNN over the length of the sequence, then
-relying mostly on <strong>autodiff</strong>. Without autodiff, we cannot
-solve the problem, because we cannot write the gradient of the rnn
-model.</p>
+$$
+
+<p>$$<br>y_t &#x3D; g(W_{yh} + b_y)<br>$$</p>
+<p>Where $f$ and $g$ are activation function. $W_{hh}$ , $W_{hx}$, $W_{yh}$ are weights, and $b_y$, $b_h$ are bias term. And $x \in R^n$,  $y \in R^{k}$, $h_t \in R^d$, $W_{hh} \in R^{d \times d}$, $W_{yh} \in R^{k \times d}$, $W_{hx} \in R^{d \times n}$, $b_h \in R^d$, $b_y \in R^k$.</p>
+<p>After we define the RNN model, the next question is how to train RNN? Given a sequence of inputs and target outputs$(x_1, …, x_T, y^{<em>}_1, …, y^{</em>}_T)$, we can train an RNN using backpropagation through time, which just involves “unrolling” the RNN over the length of the sequence, then relying mostly on <strong>autodiff</strong>. Without autodiff, we cannot solve the problem, because we cannot write the gradient of the rnn model.</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">opt = Optimizer(params = (W_hh, W_hx, W_yh, b_h, b_y))</span><br><span class="line">h[<span class="number">0</span>] = <span class="number">0</span></span><br><span class="line">l = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> t = <span class="number">1</span>,...,T:</span><br><span class="line">  h[t] = f(W_hh * h[t-<span class="number">1</span>] + W_hx * x[t] + b_h)</span><br><span class="line">  y[t] = g(W_yh * h[t] + b_y)</span><br><span class="line">  l += Loss(y[t], y_star[t])</span><br><span class="line">l.backward()</span><br><span class="line">opt.step()</span><br></pre></td></tr></table></figure>
-<p>As you can see, the challenge for training RNNs is similar to that of
-training deep MLP networks, becasuse the sequence maybe long and the rnn
-is complicated.</p>
+
+
+
+<p>As you can see, the challenge for training RNNs is similar to that of training deep MLP networks, becasuse the sequence maybe long and the rnn is complicated.</p>
 <ul>
-<li><p><strong>Exploding activations/gradients</strong>: Because we
-train RNNs on long sequences, if the weights/activation of the RNN are
-scaled poorly, the hidden activations (and therefore also the gradients)
-will grow unboundedly with sequence length. For example, we use below
-initialization, the gradient will soon be NaN which cannot be stored in
-the 32-bit floating number.</p>
-<figure>
-<img
-src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826094116833.png"
-alt="image-20240826094116833" />
-<figcaption aria-hidden="true">image-20240826094116833</figcaption>
-</figure></li>
-<li><p><strong>Vanishing activation/gradients</strong>: Similarly, if
-weights are too small then information from the inputs will quickly
-decay with time (and it is precisely the “long range” dependencies that
-we would often like to model with sequence models). So the context of
-the previous inputs will decay.</p>
-<figure>
-<img
-src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826094344394.png"
-alt="image-20240826094344394" />
-<figcaption aria-hidden="true">image-20240826094344394</figcaption>
-</figure></li>
+<li><p><strong>Exploding activations&#x2F;gradients</strong>: Because we train RNNs on long sequences, if the weights&#x2F;activation of the RNN are scaled poorly, the hidden activations (and therefore also the gradients) will grow unboundedly with sequence length. For example, we use below initialization, the gradient will soon be NaN which cannot be stored in the 32-bit floating number.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826094116833.png" alt="image-20240826094116833"></p>
+</li>
+<li><p><strong>Vanishing activation&#x2F;gradients</strong>: Similarly, if weights are too small then information from the inputs will quickly decay with time (and it is precisely the “long range” dependencies that we would often like to model with sequence models). So the context of the previous  inputs will decay.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826094344394.png" alt="image-20240826094344394"></p>
+</li>
 </ul>
-<p>To solve <strong>Exploding activations/gradients</strong> problem, we
-can use other activation functions. ReLU is a bad activation function
-because it can grow unboundedly. We can use sigmod and tanh activation
-function.</p>
-<figure>
-<img
-src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826094802233.png"
-alt="image-20240826094802233" />
-<figcaption aria-hidden="true">image-20240826094802233</figcaption>
-</figure>
-<p>But the problem <strong>Vanishing activation/gradients</strong> still
-be unsolved. Creating large enough weights to not cause
-activations/gradients to vanish requires being in <strong>the
-“saturating” regions of the activations</strong>, where gradients are
-very small ⟹ still have vanishing gradients</p>
+<p>To solve <strong>Exploding activations&#x2F;gradients</strong> problem, we can use other activation functions. ReLU is a bad activation function because it can grow unboundedly. We can use sigmod and tanh activation function.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826094802233.png" alt="image-20240826094802233"></p>
+<p>But the problem <strong>Vanishing activation&#x2F;gradients</strong> still be unsolved. Creating large enough weights to not cause activations&#x2F;gradients to vanish requires being in <strong>the “saturating” regions of the activations</strong>, where gradients are very small ⟹ still have vanishing gradients</p>
 <p>How solve this problems? Use LSTM!</p>
-<h3 id="lstms">LSTMs</h3>
-<p>Long short term memory (LSTM) cells are a particular form of hidden
-unit update that avoids (some of) the problems of vanilla LSTMs. It make
-two changes to avoid vanishing activation/gradients.</p>
+<h3 id="LSTMs"><a href="#LSTMs" class="headerlink" title="LSTMs"></a>LSTMs</h3><p>Long short term memory (LSTM) cells are a particular form of hidden unit update that avoids (some of) the problems of vanilla LSTMs. It make two changes to avoid vanishing activation&#x2F;gradients.</p>
 <ul>
-<li><p>Step 1: Divide the hidden unit into two components, called
-(confusingly) the <strong>hidden state</strong> and the <strong>cell
-state</strong></p>
-<figure>
-<img
-src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826095305637.png"
-alt="image-20240826095305637" />
-<figcaption aria-hidden="true">image-20240826095305637</figcaption>
-</figure>
+<li><p>Step 1:  Divide the hidden unit into two components, called (confusingly) the <strong>hidden state</strong> and the <strong>cell state</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826095305637.png" alt="image-20240826095305637"></p>
 <ul>
-<li><p>Step 2: Use a very specific formula to update the hidden state
-and cell state (throwing in some other names, like “forget gate”, “input
-gate”, “output gate” for good measure)</p>
-<figure>
-<img
-src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826095513339.png"
-alt="image-20240826095513339" />
-<figcaption aria-hidden="true">image-20240826095513339</figcaption>
-</figure>
-<p>where <span class="math inline">\(i_t \in R^d\)</span>, <span
-class="math inline">\(f_t \in R^d\)</span>,<span
-class="math inline">\(g_t \in R^d\)</span>, <span
-class="math inline">\(o_t \in R^d\)</span>, <span
-class="math inline">\(W_{hh} \in R^{4d \times d}\)</span>, <span
-class="math inline">\(h_t \in R^d\)</span> , <span
-class="math inline">\(W_{hx} \in R^{4d \times n}\)</span></p></li>
-</ul></li>
+<li><p>Step 2: Use a very specific formula to update the hidden state and cell state (throwing in some other names, like “forget gate”, “input gate”, “output gate” for good measure)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826095513339.png" alt="image-20240826095513339"></p>
+<p>where $i_t \in R^d$, $f_t \in R^d$,$g_t \in R^d$, $o_t \in R^d$, $W_{hh} \in R^{4d \times d}$, $h_t \in R^d$ , $W_{hx} \in R^{4d \times n}$</p>
+</li>
 </ul>
-<p>Why LSTM works? The factor of <span
-class="math inline">\(f_t\)</span> and <span
-class="math inline">\(i_t\)</span> can control the context information.
-Close to 0 --&gt; not mantain the context, Close 1 --&gt; context
-information will be untoched.</p>
-<figure>
-<img
-src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826100216569.png"
-alt="image-20240826100216569" />
-<figcaption aria-hidden="true">image-20240826100216569</figcaption>
-</figure>
-<h3 id="beyond-simple-sequential-models">Beyond "simple" sequential
-Models</h3>
-<p>We'll introduce a list of aplication of RNN.</p>
-<ul>
-<li><p><strong>Seq2Seq model</strong>: To give you a short glimpse of
-the kind of things you can do with RNNs/LSTMs beyond “simple” sequence
-prediction, consider the task of <strong>trying to translate between
-languages</strong>.</p>
-<p>Can concatenate two RNNs together, one that “only” processes the
-sequence to create a final hidden state (i.e., no loss function,
-encoder); then a section that takes in this initial hidden state, and
-“only” generates a sequence(decoder). Why this model works? Because the
-translation task is not a one-one mapping problem.</p>
-<figure>
-<img
-src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826100555240.png"
-alt="image-20240826100555240" />
-<figcaption aria-hidden="true">image-20240826100555240</figcaption>
-</figure>
-<p><span class="math inline">\(h_5\)</span> contains the summary of the
-context.</p></li>
-<li><p><strong>Bidirectional RNNs</strong>: RNNs can use only the
-sequence information up until time <span
-class="math inline">\(t\)</span> to predict <span
-class="math inline">\(y_t\)</span>.This is sometimes desirable (e.g.,
-autoregressive models). But sometime undesirable (e.g., language
-translation where we want to use “whole” input sequence)</p>
-<p>Bi-directional RNNs stack a forwardrunning RNN with a
-backward-running RNN: information from the entire sequence to propagates
-to the hidden state. So we can use the full context to predict!</p>
-<figure>
-<img
-src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826101002495.png"
-alt="image-20240826101002495" />
-<figcaption aria-hidden="true">image-20240826101002495</figcaption>
-</figure></li>
+</li>
 </ul>
-<h2 id="implementing-rnns">Implementing RNNs</h2>
-<p>Codelab notebook links: <a
-href="https://colab.research.google.com/drive/1c8fmSa1H9noi_1RJhFOksloEFNDrEmU7?usp=sharing">implementing
-RNNs</a></p>
+<p>Why LSTM works? The factor of $f_t$ and $i_t$ can control the context information. Close to 0 –&gt; not mantain the context, Close 1 –&gt; context information will be untoched.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826100216569.png" alt="image-20240826100216569"></p>
+<h3 id="Beyond-“simple”-sequential-Models"><a href="#Beyond-“simple”-sequential-Models" class="headerlink" title="Beyond “simple” sequential Models"></a>Beyond “simple” sequential Models</h3><p>We’ll introduce a list of aplication of RNN.</p>
+<ul>
+<li><p><strong>Seq2Seq model</strong>: To give you a short glimpse of the kind of things you can do with RNNs&#x2F;LSTMs beyond “simple” sequence prediction, consider the task of <strong>trying to translate between languages</strong>. </p>
+<p>Can concatenate two RNNs together, one that “only” processes the sequence to create a final hidden state (i.e., no loss function, encoder); then a section that takes in this initial hidden state, and “only” generates a sequence(decoder). Why this model works? Because the translation task is not a one-one mapping problem.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826100555240.png" alt="image-20240826100555240"></p>
+<p>$h_5$ contains the summary of the context.</p>
+</li>
+<li><p><strong>Bidirectional RNNs</strong>: RNNs can use only the sequence information up until time $t$ to predict $y_t$.This is sometimes desirable (e.g., autoregressive models). But sometime undesirable (e.g., language translation where we want to use “whole” input sequence)</p>
+<p>Bi-directional RNNs stack a forwardrunning RNN with a backward-running RNN: information from the entire sequence to propagates to the hidden state. So we can use the full context to predict!</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240826101002495.png" alt="image-20240826101002495"></p>
+</li>
+</ul>
+<h2 id="Implementing-RNNs"><a href="#Implementing-RNNs" class="headerlink" title="Implementing RNNs"></a>Implementing RNNs</h2><p>Codelab notebook links: <a href="https://colab.research.google.com/drive/1c8fmSa1H9noi_1RJhFOksloEFNDrEmU7?usp=sharing">implementing RNNs</a></p>
 ]]></content>
       <categories>
         <category>dlsys</category>
       </categories>
       <tags>
         <tag>rnn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>DLSys: Transformers and Attention</title>
+    <url>/2024/08/27/DLSys-Transformers-and-Autoregressive-Models/</url>
+    <content><![CDATA[<h2 id="Theory"><a href="#Theory" class="headerlink" title="Theory"></a>Theory</h2><h3 id="The-two-approaches-to-time-series-modeling"><a href="#The-two-approaches-to-time-series-modeling" class="headerlink" title="The two approaches to time series modeling"></a>The two approaches to time series modeling</h3><p>Let’s recall our basic time series prediction task from the previous posts. More fundamentally, a time series prediction task is the task of predicting:<br>$$<br>y_{1:T}&#x3D;f_\theta(x_{1:T})<br>$$<br><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828130234284.png" alt="image-20240828130234284" style="zoom:50%;" /></p>
+<p>where $y_t$ can depend only on $x_{1:t}$. There are mainly two approach to do so: <strong>latent state approach</strong> and <strong>direct prediction</strong>.</p>
+<h4 id="The-RNN-“latent-state”-approach"><a href="#The-RNN-“latent-state”-approach" class="headerlink" title="The RNN “latent state” approach"></a>The RNN “latent state” approach</h4><p>We have already seen the RNN approach to time series: <strong>maintain “latent state” $h_t$ that summarizes all information up until that point</strong>.</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828130718884-20240828130724791.png" alt="image-20240828130718884" style="zoom: 33%;" />
+
+<ul>
+<li><strong>Pros</strong>: Potentially “infinite” history, compact representation. It means the time series length is not limited and has low memory to store the previous context.</li>
+<li><strong>Cons</strong>:  Long “compute path” between history and current time ⟹ vanishing &#x2F; exploding gradients, hard to learn. A single state $h_t$ is hard to represent long context, easily lost the previous context.</li>
+</ul>
+<h4 id="The-“direct-prediction”-approach"><a href="#The-“direct-prediction”-approach" class="headerlink" title="The “direct prediction” approach"></a>The “direct prediction” approach</h4><p>To avoid vanishing&#x2F;exploding gradients(lose context&#x2F;context is hard to store), we can also directly predict output $y_t$:<br>$$<br>y_t &#x3D; f_\theta(x_{1:t})<br>$$<br>$f_\theta$ must be a function that can make predictions of differently-sized inputs.</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828131152642.png" alt="image-20240828131152642" style="zoom:33%;" />
+
+<ul>
+<li><strong>Pros</strong>:  Often can map from past to current state with shorter compute path. With a proper function $f_\theta$ , we can avoid vanishing&#x2F;exploding gradients.</li>
+<li><strong>Cons</strong>: No compact state representation, finite history in practice.</li>
+</ul>
+<p>One of the most straightforward ways to specify the function $f_\theta$: (fully) convolutional networks, a.k.a. temporal convolutional networks (TCNs). The main constraint is that <strong>the convolutions be causal</strong>: $z^{i+1}<em>t$ can only depend on $z^{i}</em>{t-k:t}$.</p>
+<p>Many successful applications: e.g. WaveNet for speech generation (<a href="https://deepmind.google/discover/blog/wavenet-a-generative-model-for-raw-audio/">van den Oord et al., 2016</a>)</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828132255771.png" alt="image-20240828132255771" style="zoom:67%;" />
+
+<p>Despite their simplicity, CNNs have a notable disadvantage for time series prediction: the receptive field of each convolution is usually relatively small ⟹ need deep networks to actually incorporate past information. For example, WaveNet can achive a receptive field of 16 using 4 layer. For very long sequence, it will need very deep network. There are several solutions:</p>
+<ul>
+<li><strong>Increase kernel size</strong>: also increases the parameters of the network</li>
+<li><a href="https://medium.com/@abhishekjainindore24/pooling-and-their-types-in-cnn-4a4b8a7a4611"><strong>Pooling layers</strong></a>: not as well suited to dense prediction, where we want to predict all of $y_{1:T}$. We’ll lose some predictions because pooling will decrease the size of input.(alose decrease the size of output)</li>
+<li><strong>Dilated convolutions</strong>: “Skips over” some past state &#x2F; inputs. But we’ll lose some context which may be important.</li>
+</ul>
+<p>As we can see, CNN is not well suited for time series prediction. We’ll introduce a new arch of network: transformer which will overcome the cons of CNN.</p>
+<h3 id="Self-attention-and-Transformers"><a href="#Self-attention-and-Transformers" class="headerlink" title="Self-attention and Transformers"></a>Self-attention and Transformers</h3><h4 id="Self-Attention"><a href="#Self-Attention" class="headerlink" title="Self Attention"></a>Self Attention</h4><p>Let’s first talk about the important part of transformer: <strong>Self Attention</strong>! “Attention” in deep networks generally refers to <strong>any mechanism where individual states are weighted and then combined</strong>.</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829085656637.png" alt="image-20240829085656637" style="zoom:50%;" />
+
+<p>Attention is used originally in RNNs when one wanted to combine latent states over all times in a more general manner than “just” looking at the last state. Let’s define general attention in math:<br>$$<br>z_t &#x3D; \theta^Th_t^k<br>$$</p>
+<p>$$<br>w &#x3D; softmax(z)<br>$$</p>
+<p>$$<br>\bar{h} &#x3D; \sum_{t&#x3D;1}^T(w_th_t^k)<br>$$</p>
+<blockquote>
+<p>The <strong>softmax function</strong> converts a vector of <em>K</em> real numbers into a <a href="https://en.wikipedia.org/wiki/Probability_distribution">probability distribution</a> of <em>K</em> possible outcomes. </p>
+</blockquote>
+<p><strong>Self-attention</strong> refers to a particular form of attention mechanism. Given three inputs $K,Q,V \in R^{T \times d}$, (“queries”, “keys”, “values”, in one of the least-meaningful semantic designations we have in deep learning).</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829090838397.png" alt="image-20240829090838397" />
+
+<p>we define the self attention operation as:<br>$$<br>SelfAttetion(Q,K,V)&#x3D;softmax(\frac{QK^T}{d^{1&#x2F;2}})V<br>$$<br>Where the input is $X \in R^{T \times n}, W_k \in W^{n \times d}, W_Q \in W^{n \times d}, W_V \in W^{n \times d}$, we can simple calculate $Q, K, V$ as follows:<br>$$<br>Q &#x3D; XW_Q<br>$$</p>
+<p>$$<br>K &#x3D; XW_K<br>$$</p>
+<p>$$<br>V &#x3D; XW_V<br>$$</p>
+<p>Compare to the attention used in rnn, we use input to replace the hidden state $h$.</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829092012276.png" alt="image-20240829092012276" style="zoom:50%;" />
+
+<p>Properties of self-attention:</p>
+<ul>
+<li>Invariant (really, equivariant) to permutations of the $Q, K, V$matrices </li>
+<li>Allows influence between $q_t,k_t, v_t$over all times without increase parameter size.(compare to CNN, in order to increase reception field, we need to increase kernel size –&gt; increase parameter size)</li>
+<li>Compute cost is $O(T^2 + 2Td)$ (cannot be easily reduced due to nonlinearity applied to full $T \times T$ matrix)</li>
+<li>softmax const $T^2$</li>
+<li>two matrix multiplication cost $Td$</li>
+</ul>
+<h4 id="Transformer"><a href="#Transformer" class="headerlink" title="Transformer"></a>Transformer</h4><p>A simple transoformer block consist of  self-attention mechanism and other network blocks.</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829092949134.png" alt="image-20240829092949134" style="zoom:50%;" />
+
+<p>In more detail, the Transformer block has the following form:</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829093117580.png" alt="image-20240829093117580" style="zoom: 33%;" />
+
+<p>The Transformer architecture uses a series of attention mechanisms (and feedfoward layers) to process a time series:</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829093229868.png" alt="image-20240829093229868" style="zoom: 50%;" />
+
+<p>Which can be form use math equation below:<br>$$<br>Z^{(i+1)}&#x3D;TransformerBlock(Z^{(i)})<br>$$<br>All time steps (in practice, within a given time slice) are <strong>processed in parallel</strong>, avoids the need for sequential processing as in RNNs.</p>
+<p>We can apply the Transformer block to the “direct” prediction method for time series, instead of using a convolutional block.</p>
+<ul>
+<li><p>Pros:</p>
+<ul>
+<li>Full receptive field within a single layer (i.e., can immediately use past data) </li>
+<li>Mixing over time doesn’t increase parameter count (unlike convolutions)</li>
+</ul>
+</li>
+<li><p>Cons:</p>
+<ul>
+<li>All outputs depend on all inputs (no good e.g., for autoregressive tasks)  – the latent cortex is more important.</li>
+<li>No ordering of data (remember that transformers are equivariant to permutations of the sequence)–the position masters.</li>
+</ul>
+</li>
+</ul>
+<p>To solve the cons of transformer, we introduce two techniques: <strong>masked self-attention</strong>, and <strong>Positional encodings</strong>.</p>
+<h4 id="Masked-self-attention"><a href="#Masked-self-attention" class="headerlink" title="Masked self-attention"></a>Masked self-attention</h4><p>To solve the problem of “acausal” dependencies, we can mask the softmax operator to assign zero weight to any “future” time steps.</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094005050.png" alt="image-20240829094005050" style="zoom: 50%;" />
+
+<p>Note that even though technically this means we can “avoid” creating those entries in the attention matrix to being with, in practice it’s often faster to just form them then mask them out.</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094241280.png" alt="image-20240829094241280" style="zoom:50%;" />
+
+<h4 id="Positional-encodings"><a href="#Positional-encodings" class="headerlink" title="Positional encodings"></a>Positional encodings</h4><p>To solve the problem of “order invariance”, we can add a positional encoding to the input, which <strong>associates each input with its position in the sequence</strong>.</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094534849.png" alt="image-20240829094534849" style="zoom:50%;" />
+
+<p>and where $w_i, i &#x3D; 1,…,n$ is typically chosen according to a logarithmic schedule. Really, add positional encoding to d-dimensional projection of $T$</p>
+<h3 id="Transformers-beyond-time-series"><a href="#Transformers-beyond-time-series" class="headerlink" title="Transformers beyond time series"></a>Transformers beyond time series</h3><p>Recent work has observed that transformer blocks are extremely powerful beyond just time series</p>
+<ul>
+<li>Vision Transformers: Apply transformer to image (represented by a collection of patch embeddings), works better than CNNs for large data sets</li>
+<li>Graph Transformers: Capture graph structure in the attention matrix</li>
+</ul>
+<p>In all cases, some challenges are: </p>
+<ul>
+<li>How to represent data such that $O(T^2)$ operations are feasible </li>
+<li>How to form positional embeddings </li>
+<li>How to form the mask matrix</li>
+</ul>
+<h2 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h2><p>The runnable colab implementation is <a href="https://colab.research.google.com/drive/1sSkoJhexTDEgdBahAIm2SeV0Eqc0frj2?usp=sharing">here</a></p>
+]]></content>
+      <categories>
+        <category>dlsys</category>
+      </categories>
+      <tags>
+        <tag>transformer</tag>
       </tags>
   </entry>
 </search>
