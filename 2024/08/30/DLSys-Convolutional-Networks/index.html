@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="In this post, we’ll introduce Convolutional Networks(CNN) with large application.  Theory Convolution Operator So far we only consider full connected networks, which treat input images as vectors(size">
+  <meta name="description" content="In this post, we&#39;ll introduce Convolutional Networks(CNN) with large application.  Theory Convolution Operator So far we only consider fully connected networks, which treat input images as vectors(siz">
 <meta property="og:type" content="article">
 <meta property="og:title" content="DLSys: Convolutional Networks">
 <meta property="og:url" content="http://example.com/2024/08/30/DLSys-Convolutional-Networks/index.html">
 <meta property="og:site_name" content="MLSys Day One">
-<meta property="og:description" content="In this post, we’ll introduce Convolutional Networks(CNN) with large application.  Theory Convolution Operator So far we only consider full connected networks, which treat input images as vectors(size">
+<meta property="og:description" content="In this post, we&#39;ll introduce Convolutional Networks(CNN) with large application.  Theory Convolution Operator So far we only consider fully connected networks, which treat input images as vectors(siz">
 <meta property="og:locale">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830095205371.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830095715641.png">
@@ -40,8 +40,10 @@
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830131419161.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830131952146.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830132217024.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240831123813936.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240831215657389.png">
 <meta property="article:published_time" content="2024-08-30T01:38:36.000Z">
-<meta property="article:modified_time" content="2024-08-30T05:22:31.819Z">
+<meta property="article:modified_time" content="2024-08-31T14:14:39.936Z">
 <meta property="article:author" content="xjh42">
 <meta property="article:tag" content="transformer">
 <meta name="twitter:card" content="summary">
@@ -206,10 +208,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2024-08-30 09:38:36 / Modified: 13:22:31" itemprop="dateCreated datePublished" datetime="2024-08-30T09:38:36+08:00">2024-08-30</time>
+              <time title="Created: 2024-08-30 09:38:36" itemprop="dateCreated datePublished" datetime="2024-08-30T09:38:36+08:00">2024-08-30</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-08-31 22:14:39" itemprop="dateModified" datetime="2024-08-31T22:14:39+08:00">2024-08-31</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -231,76 +239,231 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>In this post, we’ll introduce Convolutional Networks(CNN) with large application.</p>
-<h1 id="Theory"><a href="#Theory" class="headerlink" title="Theory"></a>Theory</h1><h2 id="Convolution-Operator"><a href="#Convolution-Operator" class="headerlink" title="Convolution Operator"></a>Convolution Operator</h2><p>So far we only consider full connected networks, <strong>which treat input images as vectors(size is $n$), and use a large weight matrix($W \in R^{n \times d}$) to map input vector to a feature vector</strong>. This creates a substantial problem as we attempt to handle larger images: a 256x256 RGB image ⟹ ~200K dimensional input ⟹ mapping to 1000 dimensional hidden vector requires 200M parameters (for a single layer)</p>
-<p>Another problem is this operation <strong>does not capture any of the “intuitive” invariances that we expect to have in images</strong> (e.g., shifting image one pixel leads to very different next layer) It’s means we use full image pixels to predict single value in next layer.</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830095205371.png" alt="image-20240830095205371" style="zoom:67%;" />
-
-<p>We’ll introduce a new operator to network: convolution to simplify deep networks.</p>
-<h3 id="Convolutions-can-“Simplify”-Deep-Networks"><a href="#Convolutions-can-“Simplify”-Deep-Networks" class="headerlink" title="Convolutions can “Simplify” Deep Networks"></a>Convolutions can “Simplify” Deep Networks</h3><p>Convolutions combine two ideas that are well-suited to processing images </p>
+        <p>In this post, we'll introduce Convolutional Networks(CNN) with large
+application.</p>
+<h1 id="theory">Theory</h1>
+<h2 id="convolution-operator">Convolution Operator</h2>
+<p>So far we only consider fully connected networks, <strong>which treat
+input images as vectors(size is <span class="math inline">\(n\)</span>),
+and use a large weight matrix(<span class="math inline">\(W \in R^{n
+\times d}\)</span>) to map input vector to a feature vector</strong>.
+This creates a substantial problem as we attempt to handle larger
+images: a 256x256 RGB image ⟹ ~200K dimensional input ⟹ mapping to 1000
+dimensional hidden vector requires 200M parameters (for a single
+layer)</p>
+<p>Another problem is this operation <strong>does not capture any of the
+“intuitive” invariances that we expect to have in images</strong> (e.g.,
+shifting image one pixel leads to very different next layer). It means
+we use full image pixels to predict single value in next layer.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830095205371.png" alt="image-20240830095205371" style="zoom:67%;" /></p>
+<p>We'll introduce a new operator convolution to simplify deep
+networks.</p>
+<h3 id="convolutions-can-simplify-deep-networks">Convolutions can
+“Simplify” Deep Networks</h3>
+<p>Convolutions combine two ideas that are well-suited to processing
+images</p>
 <ul>
-<li>Require that <strong>activations between layers occur only in a “local” manner</strong>, and treat hidden layers themselves as spatial images </li>
+<li>Require that <strong>activations between layers occur only in a
+“local” manner</strong>, and treat hidden layers themselves as spatial
+images</li>
 <li>Share weights across all spatial locations</li>
 </ul>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830095715641.png" alt="image-20240830095715641" style="zoom:50%;" />
-
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830095715641.png" alt="image-20240830095715641" style="zoom:50%;" /></p>
 <p>Compare to full connected network, convolution can:</p>
 <ul>
-<li>Drastically reduces the parameter count.(256x256 grayscale image ⟹ 256x256 single-channel hidden layer: 4 billion parameters in fully connected network to 9 parameters in 3x3 convolution)</li>
-<li>Captures (some) “natural” invariances (Shifting input image one pixel to the right shifts creates a hidden shifts the hidden unit “image”)</li>
+<li>Drastically reduces the parameter count.(256x256 grayscale image ⟹
+256x256 single-channel hidden layer: 4 billion parameters in fully
+connected network to 9 parameters in 3x3 convolution)</li>
+<li>Captures (some) “natural” invariances (Shifting input image one
+pixel to the right shifts creates a hidden shifts the hidden unit
+“image”)</li>
 </ul>
-<p>Let’s see how convolution works in details</p>
-<h3 id="Convolutions-in-detail"><a href="#Convolutions-in-detail" class="headerlink" title="Convolutions in detail"></a>Convolutions in detail</h3><p>Convolutions are a basic primitive in many computer vision and image processing algorithms. Convolution operator is to <strong>“slide” the weights $k \times k$ weight $w$  (called a filter, with kernel size $k$) over the image to produce a new image, written $y &#x3D; z * w$</strong>.</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830100303185.png" alt="image-20240830100303185" style="zoom: 33%;" />
-
-<p>let’s see how to compute $y_{11}$:</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830124621705.png" alt="image-20240830124621705" style="zoom: 33%;" />
-
-<p>The rest value of $y$ is calculated similarly.</p>
-<h3 id="Convolutions-in-Image-Processing"><a href="#Convolutions-in-Image-Processing" class="headerlink" title="Convolutions in Image Processing"></a>Convolutions in Image Processing</h3><p>Convolutions (typically with prespecified filters) are a common operation in many computer vision applications: convolution networks just move to learned filters.</p>
-<p>For conditional image programming, we use predefined filter, like Gasssian Filter, Image gradient Filter.</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830124932921.png" alt="image-20240830124932921" style="zoom: 33%;" />
-
-<h3 id="Convolutions-in-deep-networks"><a href="#Convolutions-in-deep-networks" class="headerlink" title="Convolutions in deep networks"></a>Convolutions in deep networks</h3><p>Convolutions in deep networks are virtually always multi-channel convolutions: <strong>map multi-channel (e.g., RGB) inputs to multi-channel hidden units</strong>. Multi-channel convolutions contain a convolutional filter for each input-output channel pair, single output channel is sum of convolutions over all input channels. It shows below.</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830125227168.png" alt="image-20240830125227168" style="zoom: 50%;" />
-
-<p>Let’s see how to define it in math:</p>
+<p>Let's see how convolution works in details</p>
+<h3 id="convolutions-in-detail">Convolutions in detail</h3>
+<p>Convolutions are a basic primitive in many computer vision and image
+processing algorithms. Convolution operator is to <strong>“slide” the
+weights <span class="math inline">\(k \times k\)</span> weight <span
+class="math inline">\(w\)</span> (called a filter, with kernel size
+<span class="math inline">\(k\)</span>) over the image to produce a new
+image, written <span class="math inline">\(y = z *
+w\)</span></strong>.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830100303185.png" alt="image-20240830100303185" style="zoom: 33%;" /></p>
+<p>let's see how to compute <span
+class="math inline">\(y_{11}\)</span>:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830124621705.png" alt="image-20240830124621705" style="zoom: 33%;" /></p>
+<p>The rest value of <span class="math inline">\(y\)</span> is
+calculated similarly.</p>
+<h3 id="convolutions-in-image-processing">Convolutions in Image
+Processing</h3>
+<p>Convolutions (typically with prespecified filters) are a common
+operation in many computer vision applications: convolution networks
+just move to learned filters.</p>
+<p>For conditional image programming, we use predefined filter, like
+Gasssian Filter, Image gradient Filter.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830124932921.png" alt="image-20240830124932921" style="zoom: 33%;" /></p>
+<h3 id="convolutions-in-deep-networks">Convolutions in deep
+networks</h3>
+<p>Convolutions in deep networks are virtually always multi-channel
+convolutions: <strong>map multi-channel (e.g., RGB) inputs to
+multi-channel hidden units</strong>. Multi-channel convolutions contain
+a convolutional filter for each input-output channel pair, single output
+channel is sum of convolutions over all input channels. It shows
+below.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830125227168.png" alt="image-20240830125227168" style="zoom: 50%;" /></p>
+<p>Let's see how to define it in math:</p>
 <ul>
-<li>$x \in R^{h \times w \times c_{in}}$ denotes $c_{in}$ channel, size $h \times w$ image input</li>
-<li>$z \in R^{h \times w \times c_{out}}$ denotes $c_{out}$ channel, size $h \times w$ image out</li>
-<li>$W \in R^{c_{in} \times c_{out} \times k \times k}$ (order 4 tensor) denotes convolutional filter</li>
+<li><span class="math inline">\(x \in R^{h \times w \times
+c_{in}}\)</span> denotes <span class="math inline">\(c_{in}\)</span>
+channel, size <span class="math inline">\(h \times w\)</span> image
+input</li>
+<li><span class="math inline">\(z \in R^{h \times w \times
+c_{out}}\)</span> denotes <span class="math inline">\(c_{out}\)</span>
+channel, size <span class="math inline">\(h \times w\)</span> image
+out</li>
+<li><span class="math inline">\(W \in R^{c_{in} \times c_{out} \times k
+\times k}\)</span> (order 4 tensor) denotes convolutional filter</li>
 </ul>
-<p>$$<br>z[:,:,s] &#x3D; \sum_{r&#x3D;1}^{c_{in}}{x[:,:,r] * W[r,s,:,:]}<br>$$</p>
-<p>The math equation is hard to understand. There is, in my view, a more intuitive way to think about multi-channel convolutions: <strong>they are a generalization of traditional convolutions with scalar multiplications replaced by matrix-vector products.</strong></p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830130039529.png" alt="image-20240830130039529" style="zoom:80%;" />
-
-<h2 id="Elements-of-Practical-Convolutions"><a href="#Elements-of-Practical-Convolutions" class="headerlink" title="Elements of Practical Convolutions"></a>Elements of Practical Convolutions</h2><p>Naive convolution is hard to fit different condition. So there are serveral techniques to make convolution more practical.</p>
-<h3 id="Padding"><a href="#Padding" class="headerlink" title="Padding"></a>Padding</h3><p>“Naïve” convolutions produce a smaller output than input image. If we want to get a same resolution image, we need use padding technique.Be careful, padding is only work for <strong>odd kernel size</strong>.</p>
-<p>For (odd) kernel size $k$,  pad input with $(k-1)&#x2F;2$ zeros on all sides, results in an output that is the same size as the input</p>
+<p><span class="math display">\[
+z[:,:,s] = \sum_{r=1}^{c_{in}}{x[:,:,r] * W[r,s,:,:]}
+\]</span></p>
+<p>The math equation is hard to understand. There is, in my view, a more
+intuitive way to think about multi-channel convolutions: <strong>they
+are a generalization of traditional convolutions with scalar
+multiplications replaced by matrix-vector products.</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830130039529.png" alt="image-20240830130039529" style="zoom:80%;" /></p>
+<h2 id="elements-of-practical-convolutions">Elements of Practical
+Convolutions</h2>
+<p>Naive convolution is hard to fit different condition. So there are
+serveral techniques to make convolution more practical.</p>
+<h3 id="padding">Padding</h3>
+<p>“Naïve” convolutions produce a smaller output than input image. If we
+want to get a same resolution image, we need use padding technique.Be
+careful, padding is only work for <strong>odd kernel size</strong>.</p>
+<p>For (odd) kernel size <span class="math inline">\(k\)</span>, pad
+input with <span class="math inline">\((k-1)/2\)</span> zeros on all
+sides, results in an output that is the same size as the input</p>
 <ul>
-<li><p>There are serval variants like <strong>circular padding</strong>, <strong>padding with mean values</strong>, etc</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830130634789.png" alt="image-20240830130634789" style="zoom:80%;" /></li>
+<li><p>There are serval variants like <strong>circular padding</strong>,
+<strong>padding with mean values</strong>, etc</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830130634789.png" alt="image-20240830130634789" style="zoom:80%;" /></p></li>
 </ul>
-<h3 id="Strided-Convolutions-Pooling"><a href="#Strided-Convolutions-Pooling" class="headerlink" title="Strided Convolutions &#x2F; Pooling"></a>Strided Convolutions &#x2F; Pooling</h3><p>Given input matrix and filter, convolution output a fixed-size of output matrix,  don’t naively allow for representations at different “resolutions”. If you want to a self-defined size of output matrix, you can use either stride convolution or pooling techniques.</p>
+<h3 id="strided-convolutions-pooling">Strided Convolutions /
+Pooling</h3>
+<p>Given input matrix and filter, convolution output a fixed-size of
+output matrix, don’t naively allow for representations at different
+“resolutions”. If you want to a self-defined size of output matrix, you
+can use either stride convolution or pooling techniques.</p>
 <ul>
-<li><p><strong>Pooling</strong> : incorporate max or average pooling layers to aggregate information</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830131034673.png" alt="image-20240830131034673" style="zoom:50%;" />
-</li>
-<li><p><strong>Strided Convolutions:</strong> slide convolutional filter over image in increments &gt;1 (&#x3D; stride)</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830131143353.png" alt="image-20240830131143353" style="zoom:50%;" />
-
-<h3 id="Grouped-Convolutions"><a href="#Grouped-Convolutions" class="headerlink" title="Grouped Convolutions"></a>Grouped Convolutions</h3><p> For large numbers of input&#x2F;output channels, filters can still have <strong>a large number of weights</strong>, can lead to <strong>overfitting + slow computation</strong>.</p>
-<p>To solve this,  we can group together channels, so that **groups of channels in output only depend on corresponding groups of channels in input **(equivalently, enforce filter weight matrices to be block-diagonal)</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830131419161.png" alt="image-20240830131419161" style="zoom:50%;" />
-
-<p>Given a simple example below, we can reduce filter parameter size from $R^{3 \times 3 \times k \times k}$ to $R^{ k \times k}$.</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830131952146.png" alt="image-20240830131952146" style="zoom: 50%;" />
-
-<h3 id="Dilations"><a href="#Dilations" class="headerlink" title="Dilations"></a>Dilations</h3><p> Convolutions each have a <strong>relatively small receptive field size</strong>. We’ll lose the global context of the image.We can use dilation to solve this problem. </p>
-<p>Dilate (spread out) convolution filter, so that it covers more of the image; note that getting an image of the same size again requires adding more padding.</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830132217024.png" alt="image-20240830132217024" style="zoom:80%;" /></li>
+<li><p><strong>Pooling</strong> : incorporate max or average pooling
+layers to aggregate information</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830131034673.png" alt="image-20240830131034673" style="zoom:50%;" /></p></li>
+<li><p><strong>Strided Convolutions:</strong> slide convolutional filter
+over image in increments &gt;1 (= stride)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830131143353.png" alt="image-20240830131143353" style="zoom:50%;" /></p>
+<h3 id="grouped-convolutions">Grouped Convolutions</h3>
+<p>For large numbers of input/output channels, filters can still have
+<strong>a large number of weights</strong>, can lead to
+<strong>overfitting + slow computation</strong>.</p>
+<p>To solve this, we can group together channels, so that <strong>groups
+of channels in output only depend on corresponding groups of channels in
+input </strong>(equivalently, enforce filter weight matrices to be
+block-diagonal)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830131419161.png" alt="image-20240830131419161" style="zoom:50%;" /></p>
+<p>Given a simple example below, we can reduce filter parameter size
+from <span class="math inline">\(R^{3 \times 3 \times k \times
+k}\)</span> to <span class="math inline">\(R^{ k \times k}\)</span>.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830131952146.png" alt="image-20240830131952146" style="zoom: 50%;" /></p>
+<h3 id="dilations">Dilations</h3>
+<p>Convolutions each have a <strong>relatively small receptive field
+size</strong>. We'll lose the global context of the image.We can use
+dilation to solve this problem.</p>
+<p>Dilate (spread out) convolution filter, so that it covers more of the
+image; note that getting an image of the same size again requires adding
+more padding.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240830132217024.png" alt="image-20240830132217024" style="zoom:80%;" /></p></li>
 </ul>
-<h2 id="Differentiating-Convolutions"><a href="#Differentiating-Convolutions" class="headerlink" title="Differentiating Convolutions"></a>Differentiating Convolutions</h2><h1 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h1><p>The reference implementation is <a target="_blank" rel="noopener" href="https://colab.research.google.com/drive/1N6MtkNXq6QOpGYhXTokOjWvkF3Ff9i8Z?usp=sharing">here</a></p>
+<h2 id="differentiating-convolutions">Differentiating Convolutions</h2>
+<p>Recall the convolution math definition: <span class="math display">\[
+z[:,:,s] = \sum_{r=1}^{c_{in}}{x[:,:,r] * W[r,s,:,:]}
+\]</span></p>
+<p>If we use the basic operations like multiply/add/sum to form
+convolution and it's gradient. The computation graph will be large and
+cost a lot of memory. So we want to define convolution as basic
+operator. So it'll be only single node in a computation graph.</p>
+<p>Recall that in order to integrate any operation into a deep network,
+we need to be able to multiply by its partial derivatives (adjoint
+operation). So if we define our operation: <span class="math display">\[
+z = conv(x, W)
+\]</span></p>
+<p>how do we multiply by the adjoints: <span class="math display">\[
+\bar{v}\frac{\partial conv(x, W)}{\partial x},\bar{v}\frac{\partial
+conv(x, W)}{\partial W}
+\]</span> Let’s consider the simpler case of a matrix-vector product
+operation: <span class="math display">\[
+z =Wx
+\]</span></p>
+<p>Then <span class="math inline">\(\frac{\partial z}{\partial x} =
+W\)</span>, , so we need to compute the adjoint product: <span
+class="math display">\[
+\bar{v}^TW \iff W^T\bar{v}
+\]</span></p>
+<p>In other words, for a matrix vector multiply operation <span
+class="math inline">\(Wx\)</span>, computing the backwards pass requires
+multiplying by the transpose <span
+class="math inline">\(W^T\)</span>.</p>
+<p>In the next section, we can convert convolution to matmul operation,
+then we can simply get the result of differentiation of convolution.</p>
+<h3 id="convolutions-as-matrix-multiplication-version-1">Convolutions as
+matrix multiplication: Version 1</h3>
+<p>consider a 1D convolution to keep things a bit simpler:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240831123813936.png" alt="image-20240831123813936" style="zoom: 33%;" /></p>
+<p>We can write a 1D convolution <span class="math inline">\(x *
+w\)</span> (e.g., with zero padding) as a matrix multiplication <span
+class="math inline">\(\hat{W}x\)</span> for some <span
+class="math inline">\(\hat{W}\)</span> properly defined in terms of the
+filter <span class="math inline">\(w\)</span>. <span
+class="math display">\[
+\begin{bmatrix} z_1 \\ z_2 \\ z_3 \\ z_4 \\ z_5 \end{bmatrix} =
+\begin{bmatrix} w_2 &amp; w_3 &amp; 0  &amp; 0 &amp; 0 \\ w_1 &amp; w_2
+&amp; w_3  &amp; 0 &amp; 0 \\ 0 &amp; w_1 &amp; w_2  &amp; w_3 &amp; 0
+\\ 0 &amp; 0 &amp; w_1  &amp; w_2 &amp; w_3 \\ 0 &amp; 0 &amp; 0  &amp;
+w_1 &amp; w_2 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \\ x_3 \\ x_4 \\
+x_5 \end{bmatrix}
+\]</span> By converting convolution to matmul, we can easily compute the
+gradient of convolution. Just compute the transponse of <span
+class="math inline">\(\hat{W}\)</span>:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240831215657389.png" alt="image-20240831215657389" style="zoom: 40%;" /></p>
+<p>Notice that the operation <span
+class="math inline">\(\hat{W}^Tv\)</span> it itself just a convolution
+with the “flipped” filter: <span class="math inline">\([w_3 \space w_2
+\space w_1]\)</span> ==&gt; <strong>adjoint operator <span
+class="math inline">\(\bar{v}\frac{\partial conv(x, W)}{\partial
+x}\)</span> just requires convolving <span
+class="math inline">\(\bar{v}\)</span> with a the flipped <span
+class="math inline">\(W\)</span></strong>.</p>
+<h3 id="convolutions-as-matrix-multiplication-version-2">Convolutions as
+matrix multiplication: Version 2</h3>
+<p>What about the other adjoint,<span
+class="math inline">\(\bar{v}\frac{\partial conv(x, W)}{\partial
+W}\)</span>?</p>
+<p>For this term, observe that we can also write the convolution as
+<strong>a matrix-vector product treating the filter as the
+vector</strong>. <span class="math display">\[
+\begin{bmatrix} z_1 \\ z_2 \\ z_3 \\ z_4 \\ z_5 \end{bmatrix} =
+\begin{bmatrix} 0 &amp; x_1 &amp; x_2 \\ x_1 &amp; x_2 &amp; x_3 \\ x_2
+&amp; x_3 &amp; x_4 \\ x_3 &amp; x_4 &amp; x_5 \\ x_4 &amp; x_5 &amp; 0
+\end{bmatrix} \begin{bmatrix} w_1 \\ w_2 \\ w_3 \end{bmatrix}
+\]</span></p>
+<p>So adjoint requires multiplying by the transpose of this <span
+class="math inline">\(x\)</span>-based matrix: <span
+class="math display">\[
+\begin{bmatrix} 0 &amp; x_1 &amp; x_2 &amp; x_3 &amp; x_4 \\ x_1 &amp;
+x_2 &amp; x_3 &amp; x_4 &amp; x_5 \\ x_2 &amp; x_3 &amp; x_4 &amp; x_5
+&amp; 0 \end{bmatrix}
+\]</span></p>
+<h1 id="implementation">Implementation</h1>
+<p>The reference implementation is <a
+target="_blank" rel="noopener" href="https://colab.research.google.com/drive/1N6MtkNXq6QOpGYhXTokOjWvkF3Ff9i8Z?usp=sharing">here</a></p>
 
     </div>
 
@@ -381,7 +544,14 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Theory"><span class="nav-number">1.</span> <span class="nav-text">Theory</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Convolution-Operator"><span class="nav-number">1.1.</span> <span class="nav-text">Convolution Operator</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Convolutions-can-%E2%80%9CSimplify%E2%80%9D-Deep-Networks"><span class="nav-number">1.1.1.</span> <span class="nav-text">Convolutions can “Simplify” Deep Networks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Convolutions-in-detail"><span class="nav-number">1.1.2.</span> <span class="nav-text">Convolutions in detail</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Convolutions-in-Image-Processing"><span class="nav-number">1.1.3.</span> <span class="nav-text">Convolutions in Image Processing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Convolutions-in-deep-networks"><span class="nav-number">1.1.4.</span> <span class="nav-text">Convolutions in deep networks</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Elements-of-Practical-Convolutions"><span class="nav-number">1.2.</span> <span class="nav-text">Elements of Practical Convolutions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Padding"><span class="nav-number">1.2.1.</span> <span class="nav-text">Padding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Strided-Convolutions-Pooling"><span class="nav-number">1.2.2.</span> <span class="nav-text">Strided Convolutions &#x2F; Pooling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Grouped-Convolutions"><span class="nav-number">1.2.3.</span> <span class="nav-text">Grouped Convolutions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dilations"><span class="nav-number">1.2.4.</span> <span class="nav-text">Dilations</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Differentiating-Convolutions"><span class="nav-number">1.3.</span> <span class="nav-text">Differentiating Convolutions</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Implementation"><span class="nav-number">2.</span> <span class="nav-text">Implementation</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#theory"><span class="nav-number">1.</span> <span class="nav-text">Theory</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#convolution-operator"><span class="nav-number">1.1.</span> <span class="nav-text">Convolution Operator</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#convolutions-can-simplify-deep-networks"><span class="nav-number">1.1.1.</span> <span class="nav-text">Convolutions can
+“Simplify” Deep Networks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#convolutions-in-detail"><span class="nav-number">1.1.2.</span> <span class="nav-text">Convolutions in detail</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#convolutions-in-image-processing"><span class="nav-number">1.1.3.</span> <span class="nav-text">Convolutions in Image
+Processing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#convolutions-in-deep-networks"><span class="nav-number">1.1.4.</span> <span class="nav-text">Convolutions in deep
+networks</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#elements-of-practical-convolutions"><span class="nav-number">1.2.</span> <span class="nav-text">Elements of Practical
+Convolutions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#padding"><span class="nav-number">1.2.1.</span> <span class="nav-text">Padding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#strided-convolutions-pooling"><span class="nav-number">1.2.2.</span> <span class="nav-text">Strided Convolutions &#x2F;
+Pooling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#grouped-convolutions"><span class="nav-number">1.2.3.</span> <span class="nav-text">Grouped Convolutions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dilations"><span class="nav-number">1.2.4.</span> <span class="nav-text">Dilations</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#differentiating-convolutions"><span class="nav-number">1.3.</span> <span class="nav-text">Differentiating Convolutions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#convolutions-as-matrix-multiplication-version-1"><span class="nav-number">1.3.1.</span> <span class="nav-text">Convolutions as
+matrix multiplication: Version 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#convolutions-as-matrix-multiplication-version-2"><span class="nav-number">1.3.2.</span> <span class="nav-text">Convolutions as
+matrix multiplication: Version 2</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#implementation"><span class="nav-number">2.</span> <span class="nav-text">Implementation</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

@@ -237,107 +237,222 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="Theory"><a href="#Theory" class="headerlink" title="Theory"></a>Theory</h2><h3 id="The-two-approaches-to-time-series-modeling"><a href="#The-two-approaches-to-time-series-modeling" class="headerlink" title="The two approaches to time series modeling"></a>The two approaches to time series modeling</h3><p>Let’s recall our basic time series prediction task from the previous posts. More fundamentally, a time series prediction task is the task of predicting:<br>$$<br>y_{1:T}&#x3D;f_\theta(x_{1:T})<br>$$<br><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828130234284.png" alt="image-20240828130234284" style="zoom:50%;" /></p>
-<p>where $y_t$ can depend only on $x_{1:t}$. There are mainly two approach to do so: <strong>latent state approach</strong> and <strong>direct prediction</strong>.</p>
-<h4 id="The-RNN-“latent-state”-approach"><a href="#The-RNN-“latent-state”-approach" class="headerlink" title="The RNN “latent state” approach"></a>The RNN “latent state” approach</h4><p>We have already seen the RNN approach to time series: <strong>maintain “latent state” $h_t$ that summarizes all information up until that point</strong>.</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828130718884-20240828130724791.png" alt="image-20240828130718884" style="zoom: 33%;" />
-
+        <h2 id="theory">Theory</h2>
+<h3 id="the-two-approaches-to-time-series-modeling">The two approaches
+to time series modeling</h3>
+<p>Let’s recall our basic time series prediction task from the previous
+posts. More fundamentally, a time series prediction task is the task of
+predicting: <span class="math display">\[
+y_{1:T}=f_\theta(x_{1:T})
+\]</span>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828130234284.png" alt="image-20240828130234284" style="zoom:50%;" /></p>
+<p>where <span class="math inline">\(y_t\)</span> can depend only on
+<span class="math inline">\(x_{1:t}\)</span>. There are mainly two
+approach to do so: <strong>latent state approach</strong> and
+<strong>direct prediction</strong>.</p>
+<h4 id="the-rnn-latent-state-approach">The RNN “latent state”
+approach</h4>
+<p>We have already seen the RNN approach to time series:
+<strong>maintain “latent state” <span class="math inline">\(h_t\)</span>
+that summarizes all information up until that point</strong>.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828130718884-20240828130724791.png" alt="image-20240828130718884" style="zoom: 33%;" /></p>
 <ul>
-<li><strong>Pros</strong>: Potentially “infinite” history, compact representation. It means the time series length is not limited and has low memory to store the previous context.</li>
-<li><strong>Cons</strong>:  Long “compute path” between history and current time ⟹ vanishing &#x2F; exploding gradients, hard to learn. A single state $h_t$ is hard to represent long context, easily lost the previous context.</li>
+<li><strong>Pros</strong>: Potentially “infinite” history, compact
+representation. It means the time series length is not limited and has
+low memory to store the previous context.</li>
+<li><strong>Cons</strong>: Long “compute path” between history and
+current time ⟹ vanishing / exploding gradients, hard to learn. A single
+state <span class="math inline">\(h_t\)</span> is hard to represent long
+context, easily lost the previous context.</li>
 </ul>
-<h4 id="The-“direct-prediction”-approach"><a href="#The-“direct-prediction”-approach" class="headerlink" title="The “direct prediction” approach"></a>The “direct prediction” approach</h4><p>To avoid vanishing&#x2F;exploding gradients(lose context&#x2F;context is hard to store), we can also directly predict output $y_t$:<br>$$<br>y_t &#x3D; f_\theta(x_{1:t})<br>$$<br>$f_\theta$ must be a function that can make predictions of differently-sized inputs.</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828131152642.png" alt="image-20240828131152642" style="zoom:33%;" />
-
+<h4 id="the-direct-prediction-approach">The “direct prediction”
+approach</h4>
+<p>To avoid vanishing/exploding gradients(lose context/context is hard
+to store), we can also directly predict output <span
+class="math inline">\(y_t\)</span>: <span class="math display">\[
+y_t = f_\theta(x_{1:t})
+\]</span> <span class="math inline">\(f_\theta\)</span> must be a
+function that can make predictions of differently-sized inputs.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828131152642.png" alt="image-20240828131152642" style="zoom:33%;" /></p>
 <ul>
-<li><strong>Pros</strong>:  Often can map from past to current state with shorter compute path. With a proper function $f_\theta$ , we can avoid vanishing&#x2F;exploding gradients.</li>
-<li><strong>Cons</strong>: No compact state representation, finite history in practice.</li>
+<li><strong>Pros</strong>: Often can map from past to current state with
+shorter compute path. With a proper function <span
+class="math inline">\(f_\theta\)</span> , we can avoid
+vanishing/exploding gradients.</li>
+<li><strong>Cons</strong>: No compact state representation, finite
+history in practice.</li>
 </ul>
-<p>One of the most straightforward ways to specify the function $f_\theta$: (fully) convolutional networks, a.k.a. temporal convolutional networks (TCNs). The main constraint is that <strong>the convolutions be causal</strong>: $z^{i+1}<em>t$ can only depend on $z^{i}</em>{t-k:t}$.</p>
-<p>Many successful applications: e.g. WaveNet for speech generation (<a target="_blank" rel="noopener" href="https://deepmind.google/discover/blog/wavenet-a-generative-model-for-raw-audio/">van den Oord et al., 2016</a>)</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828132255771.png" alt="image-20240828132255771" style="zoom:67%;" />
-
-<p>Despite their simplicity, CNNs have a notable disadvantage for time series prediction: the receptive field of each convolution is usually relatively small ⟹ need deep networks to actually incorporate past information. For example, WaveNet can achive a receptive field of 16 using 4 layer. For very long sequence, it will need very deep network. There are several solutions:</p>
+<p>One of the most straightforward ways to specify the function <span
+class="math inline">\(f_\theta\)</span>: (fully) convolutional networks,
+a.k.a. temporal convolutional networks (TCNs). The main constraint is
+that <strong>the convolutions be causal</strong>: <span
+class="math inline">\(z^{i+1}_t\)</span> can only depend on <span
+class="math inline">\(z^{i}_{t-k:t}\)</span>.</p>
+<p>Many successful applications: e.g. WaveNet for speech generation (<a
+target="_blank" rel="noopener" href="https://deepmind.google/discover/blog/wavenet-a-generative-model-for-raw-audio/">van
+den Oord et al., 2016</a>)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240828132255771.png" alt="image-20240828132255771" style="zoom:67%;" /></p>
+<p>Despite their simplicity, CNNs have a notable disadvantage for time
+series prediction: the receptive field of each convolution is usually
+relatively small ⟹ need deep networks to actually incorporate past
+information. For example, WaveNet can achive a receptive field of 16
+using 4 layer. For very long sequence, it will need very deep network.
+There are several solutions:</p>
 <ul>
-<li><strong>Increase kernel size</strong>: also increases the parameters of the network</li>
-<li><a target="_blank" rel="noopener" href="https://medium.com/@abhishekjainindore24/pooling-and-their-types-in-cnn-4a4b8a7a4611"><strong>Pooling layers</strong></a>: not as well suited to dense prediction, where we want to predict all of $y_{1:T}$. We’ll lose some predictions because pooling will decrease the size of input.(alose decrease the size of output)</li>
-<li><strong>Dilated convolutions</strong>: “Skips over” some past state &#x2F; inputs. But we’ll lose some context which may be important.</li>
+<li><strong>Increase kernel size</strong>: also increases the parameters
+of the network</li>
+<li><a
+target="_blank" rel="noopener" href="https://medium.com/@abhishekjainindore24/pooling-and-their-types-in-cnn-4a4b8a7a4611"><strong>Pooling
+layers</strong></a>: not as well suited to dense prediction, where we
+want to predict all of <span class="math inline">\(y_{1:T}\)</span>.
+We'll lose some predictions because pooling will decrease the size of
+input.(alose decrease the size of output)</li>
+<li><strong>Dilated convolutions</strong>: “Skips over” some past state
+/ inputs. But we'll lose some context which may be important.</li>
 </ul>
-<p>As we can see, CNN is not well suited for time series prediction. We’ll introduce a new arch of network: transformer which will overcome the cons of CNN.</p>
-<h3 id="Self-attention-and-Transformers"><a href="#Self-attention-and-Transformers" class="headerlink" title="Self-attention and Transformers"></a>Self-attention and Transformers</h3><h4 id="Self-Attention"><a href="#Self-Attention" class="headerlink" title="Self Attention"></a>Self Attention</h4><p>Let’s first talk about the important part of transformer: <strong>Self Attention</strong>! “Attention” in deep networks generally refers to <strong>any mechanism where individual states are weighted and then combined</strong>.</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829085656637.png" alt="image-20240829085656637" style="zoom:50%;" />
-
-<p>Attention is used originally in RNNs when one wanted to combine latent states over all times in a more general manner than “just” looking at the last state. Let’s define general attention in math:<br>$$<br>z_t &#x3D; \theta^Th_t^k<br>$$</p>
-<p>$$<br>w &#x3D; softmax(z)<br>$$</p>
-<p>$$<br>\bar{h} &#x3D; \sum_{t&#x3D;1}^T(w_th_t^k)<br>$$</p>
+<p>As we can see, CNN is not well suited for time series prediction.
+We'll introduce a new arch of network: transformer which will overcome
+the cons of CNN.</p>
+<h3 id="self-attention-and-transformers">Self-attention and
+Transformers</h3>
+<h4 id="self-attention">Self Attention</h4>
+<p>Let's first talk about the important part of transformer:
+<strong>Self Attention</strong>! “Attention” in deep networks generally
+refers to <strong>any mechanism where individual states are weighted and
+then combined</strong>.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829085656637.png" alt="image-20240829085656637" style="zoom:50%;" /></p>
+<p>Attention is used originally in RNNs when one wanted to combine
+latent states over all times in a more general manner than “just”
+looking at the last state. Let's define general attention in math: <span
+class="math display">\[
+z_t = \theta^Th_t^k
+\]</span></p>
+<p><span class="math display">\[
+w = softmax(z)
+\]</span></p>
+<p><span class="math display">\[
+\bar{h} = \sum_{t=1}^T(w_th_t^k)
+\]</span></p>
 <blockquote>
-<p>The <strong>softmax function</strong> converts a vector of <em>K</em> real numbers into a <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Probability_distribution">probability distribution</a> of <em>K</em> possible outcomes. </p>
+<p>The <strong>softmax function</strong> converts a vector of <em>K</em>
+real numbers into a <a
+target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Probability_distribution">probability
+distribution</a> of <em>K</em> possible outcomes.</p>
 </blockquote>
-<p><strong>Self-attention</strong> refers to a particular form of attention mechanism. Given three inputs $K,Q,V \in R^{T \times d}$, (“queries”, “keys”, “values”, in one of the least-meaningful semantic designations we have in deep learning).</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829090838397.png" alt="image-20240829090838397" />
-
-<p>we define the self attention operation as:<br>$$<br>SelfAttetion(Q,K,V)&#x3D;softmax(\frac{QK^T}{d^{1&#x2F;2}})V<br>$$<br>Where the input is $X \in R^{T \times n}, W_k \in W^{n \times d}, W_Q \in W^{n \times d}, W_V \in W^{n \times d}$, we can simple calculate $Q, K, V$ as follows:<br>$$<br>Q &#x3D; XW_Q<br>$$</p>
-<p>$$<br>K &#x3D; XW_K<br>$$</p>
-<p>$$<br>V &#x3D; XW_V<br>$$</p>
-<p>Compare to the attention used in rnn, we use input to replace the hidden state $h$.</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829092012276.png" alt="image-20240829092012276" style="zoom:50%;" />
-
+<p><strong>Self-attention</strong> refers to a particular form of
+attention mechanism. Given three inputs <span
+class="math inline">\(K,Q,V \in R^{T \times d}\)</span>, (“queries”,
+“keys”, “values”, in one of the least-meaningful semantic designations
+we have in deep learning).</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829090838397.png" alt="image-20240829090838397" /></p>
+<p>we define the self attention operation as: <span
+class="math display">\[
+SelfAttetion(Q,K,V)=softmax(\frac{QK^T}{d^{1/2}})V
+\]</span> Where the input is <span class="math inline">\(X \in R^{T
+\times n}, W_k \in W^{n \times d}, W_Q \in W^{n \times d}, W_V \in W^{n
+\times d}\)</span>, we can simple calculate <span
+class="math inline">\(Q, K, V\)</span> as follows: <span
+class="math display">\[
+Q = XW_Q
+\]</span></p>
+<p><span class="math display">\[
+K = XW_K
+\]</span></p>
+<p><span class="math display">\[
+V = XW_V
+\]</span></p>
+<p>Compare to the attention used in rnn, we use input to replace the
+hidden state <span class="math inline">\(h\)</span>.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829092012276.png" alt="image-20240829092012276" style="zoom:50%;" /></p>
 <p>Properties of self-attention:</p>
 <ul>
-<li>Invariant (really, equivariant) to permutations of the $Q, K, V$matrices </li>
-<li>Allows influence between $q_t,k_t, v_t$over all times without increase parameter size.(compare to CNN, in order to increase reception field, we need to increase kernel size –&gt; increase parameter size)</li>
-<li>Compute cost is $O(T^2 + 2Td)$ (cannot be easily reduced due to nonlinearity applied to full $T \times T$ matrix)</li>
-<li>softmax const $T^2$</li>
-<li>two matrix multiplication cost $Td$</li>
+<li>Invariant (really, equivariant) to permutations of the <span
+class="math inline">\(Q, K, V\)</span>matrices</li>
+<li>Allows influence between <span class="math inline">\(q_t,k_t,
+v_t\)</span>over all times without increase parameter size.(compare to
+CNN, in order to increase reception field, we need to increase kernel
+size --&gt; increase parameter size)</li>
+<li>Compute cost is <span class="math inline">\(O(T^2 + 2Td)\)</span>
+(cannot be easily reduced due to nonlinearity applied to full <span
+class="math inline">\(T \times T\)</span> matrix)</li>
+<li>softmax const <span class="math inline">\(T^2\)</span></li>
+<li>two matrix multiplication cost <span
+class="math inline">\(Td\)</span></li>
 </ul>
-<h4 id="Transformer"><a href="#Transformer" class="headerlink" title="Transformer"></a>Transformer</h4><p>A simple transoformer block consist of  self-attention mechanism and other network blocks.</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829092949134.png" alt="image-20240829092949134" style="zoom:50%;" />
-
+<h4 id="transformer">Transformer</h4>
+<p>A simple transoformer block consist of self-attention mechanism and
+other network blocks.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829092949134.png" alt="image-20240829092949134" style="zoom:50%;" /></p>
 <p>In more detail, the Transformer block has the following form:</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829093117580.png" alt="image-20240829093117580" style="zoom: 33%;" />
-
-<p>The Transformer architecture uses a series of attention mechanisms (and feedfoward layers) to process a time series:</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829093229868.png" alt="image-20240829093229868" style="zoom: 50%;" />
-
-<p>Which can be form use math equation below:<br>$$<br>Z^{(i+1)}&#x3D;TransformerBlock(Z^{(i)})<br>$$<br>All time steps (in practice, within a given time slice) are <strong>processed in parallel</strong>, avoids the need for sequential processing as in RNNs.</p>
-<p>We can apply the Transformer block to the “direct” prediction method for time series, instead of using a convolutional block.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829093117580.png" alt="image-20240829093117580" style="zoom: 33%;" /></p>
+<p>The Transformer architecture uses a series of attention mechanisms
+(and feedfoward layers) to process a time series:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829093229868.png" alt="image-20240829093229868" style="zoom: 50%;" /></p>
+<p>Which can be form use math equation below: <span
+class="math display">\[
+Z^{(i+1)}=TransformerBlock(Z^{(i)})
+\]</span> All time steps (in practice, within a given time slice) are
+<strong>processed in parallel</strong>, avoids the need for sequential
+processing as in RNNs.</p>
+<p>We can apply the Transformer block to the “direct” prediction method
+for time series, instead of using a convolutional block.</p>
 <ul>
-<li><p>Pros:</p>
+<li>Pros:
 <ul>
-<li>Full receptive field within a single layer (i.e., can immediately use past data) </li>
-<li>Mixing over time doesn’t increase parameter count (unlike convolutions)</li>
+<li>Full receptive field within a single layer (i.e., can immediately
+use past data)</li>
+<li>Mixing over time doesn’t increase parameter count (unlike
+convolutions)</li>
+</ul></li>
+<li>Cons:
+<ul>
+<li>All outputs depend on all inputs (no good e.g., for autoregressive
+tasks) -- the latent cortex is more important.</li>
+<li>No ordering of data (remember that transformers are equivariant to
+permutations of the sequence)--the position masters.</li>
+</ul></li>
 </ul>
-</li>
-<li><p>Cons:</p>
+<p>To solve the cons of transformer, we introduce two techniques:
+<strong>masked self-attention</strong>, and <strong>Positional
+encodings</strong>.</p>
+<h4 id="masked-self-attention">Masked self-attention</h4>
+<p>To solve the problem of “acausal” dependencies, we can mask the
+softmax operator to assign zero weight to any “future” time steps.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094005050.png" alt="image-20240829094005050" style="zoom: 50%;" /></p>
+<p>Note that even though technically this means we can “avoid” creating
+those entries in the attention matrix to being with, in practice it’s
+often faster to just form them then mask them out.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094241280.png" alt="image-20240829094241280" style="zoom:50%;" /></p>
+<h4 id="positional-encodings">Positional encodings</h4>
+<p>To solve the problem of “order invariance”, we can add a positional
+encoding to the input, which <strong>associates each input with its
+position in the sequence</strong>.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094534849.png" alt="image-20240829094534849" style="zoom:50%;" /></p>
+<p>and where <span class="math inline">\(w_i, i = 1,...,n\)</span> is
+typically chosen according to a logarithmic schedule. Really, add
+positional encoding to d-dimensional projection of <span
+class="math inline">\(T\)</span></p>
+<h3 id="transformers-beyond-time-series">Transformers beyond time
+series</h3>
+<p>Recent work has observed that transformer blocks are extremely
+powerful beyond just time series</p>
 <ul>
-<li>All outputs depend on all inputs (no good e.g., for autoregressive tasks)  – the latent cortex is more important.</li>
-<li>No ordering of data (remember that transformers are equivariant to permutations of the sequence)–the position masters.</li>
+<li>Vision Transformers: Apply transformer to image (represented by a
+collection of patch embeddings), works better than CNNs for large data
+sets</li>
+<li>Graph Transformers: Capture graph structure in the attention
+matrix</li>
 </ul>
-</li>
-</ul>
-<p>To solve the cons of transformer, we introduce two techniques: <strong>masked self-attention</strong>, and <strong>Positional encodings</strong>.</p>
-<h4 id="Masked-self-attention"><a href="#Masked-self-attention" class="headerlink" title="Masked self-attention"></a>Masked self-attention</h4><p>To solve the problem of “acausal” dependencies, we can mask the softmax operator to assign zero weight to any “future” time steps.</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094005050.png" alt="image-20240829094005050" style="zoom: 50%;" />
-
-<p>Note that even though technically this means we can “avoid” creating those entries in the attention matrix to being with, in practice it’s often faster to just form them then mask them out.</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094241280.png" alt="image-20240829094241280" style="zoom:50%;" />
-
-<h4 id="Positional-encodings"><a href="#Positional-encodings" class="headerlink" title="Positional encodings"></a>Positional encodings</h4><p>To solve the problem of “order invariance”, we can add a positional encoding to the input, which <strong>associates each input with its position in the sequence</strong>.</p>
-<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240829094534849.png" alt="image-20240829094534849" style="zoom:50%;" />
-
-<p>and where $w_i, i &#x3D; 1,…,n$ is typically chosen according to a logarithmic schedule. Really, add positional encoding to d-dimensional projection of $T$</p>
-<h3 id="Transformers-beyond-time-series"><a href="#Transformers-beyond-time-series" class="headerlink" title="Transformers beyond time series"></a>Transformers beyond time series</h3><p>Recent work has observed that transformer blocks are extremely powerful beyond just time series</p>
+<p>In all cases, some challenges are:</p>
 <ul>
-<li>Vision Transformers: Apply transformer to image (represented by a collection of patch embeddings), works better than CNNs for large data sets</li>
-<li>Graph Transformers: Capture graph structure in the attention matrix</li>
-</ul>
-<p>In all cases, some challenges are: </p>
-<ul>
-<li>How to represent data such that $O(T^2)$ operations are feasible </li>
-<li>How to form positional embeddings </li>
+<li>How to represent data such that <span
+class="math inline">\(O(T^2)\)</span> operations are feasible</li>
+<li>How to form positional embeddings</li>
 <li>How to form the mask matrix</li>
 </ul>
-<h2 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h2><p>The runnable colab implementation is <a target="_blank" rel="noopener" href="https://colab.research.google.com/drive/1sSkoJhexTDEgdBahAIm2SeV0Eqc0frj2?usp=sharing">here</a></p>
+<h2 id="implementation">Implementation</h2>
+<p>The runnable colab implementation is <a
+target="_blank" rel="noopener" href="https://colab.research.google.com/drive/1sSkoJhexTDEgdBahAIm2SeV0Eqc0frj2?usp=sharing">here</a></p>
 
     </div>
 
@@ -421,7 +536,12 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Theory"><span class="nav-number">1.</span> <span class="nav-text">Theory</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#The-two-approaches-to-time-series-modeling"><span class="nav-number">1.1.</span> <span class="nav-text">The two approaches to time series modeling</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#The-RNN-%E2%80%9Clatent-state%E2%80%9D-approach"><span class="nav-number">1.1.1.</span> <span class="nav-text">The RNN “latent state” approach</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#The-%E2%80%9Cdirect-prediction%E2%80%9D-approach"><span class="nav-number">1.1.2.</span> <span class="nav-text">The “direct prediction” approach</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Self-attention-and-Transformers"><span class="nav-number">1.2.</span> <span class="nav-text">Self-attention and Transformers</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Self-Attention"><span class="nav-number">1.2.1.</span> <span class="nav-text">Self Attention</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Transformer"><span class="nav-number">1.2.2.</span> <span class="nav-text">Transformer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Masked-self-attention"><span class="nav-number">1.2.3.</span> <span class="nav-text">Masked self-attention</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Positional-encodings"><span class="nav-number">1.2.4.</span> <span class="nav-text">Positional encodings</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Transformers-beyond-time-series"><span class="nav-number">1.3.</span> <span class="nav-text">Transformers beyond time series</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Implementation"><span class="nav-number">2.</span> <span class="nav-text">Implementation</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#theory"><span class="nav-number">1.</span> <span class="nav-text">Theory</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#the-two-approaches-to-time-series-modeling"><span class="nav-number">1.1.</span> <span class="nav-text">The two approaches
+to time series modeling</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#the-rnn-latent-state-approach"><span class="nav-number">1.1.1.</span> <span class="nav-text">The RNN “latent state”
+approach</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#the-direct-prediction-approach"><span class="nav-number">1.1.2.</span> <span class="nav-text">The “direct prediction”
+approach</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#self-attention-and-transformers"><span class="nav-number">1.2.</span> <span class="nav-text">Self-attention and
+Transformers</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#self-attention"><span class="nav-number">1.2.1.</span> <span class="nav-text">Self Attention</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#transformer"><span class="nav-number">1.2.2.</span> <span class="nav-text">Transformer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#masked-self-attention"><span class="nav-number">1.2.3.</span> <span class="nav-text">Masked self-attention</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#positional-encodings"><span class="nav-number">1.2.4.</span> <span class="nav-text">Positional encodings</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#transformers-beyond-time-series"><span class="nav-number">1.3.</span> <span class="nav-text">Transformers beyond time
+series</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#implementation"><span class="nav-number">2.</span> <span class="nav-text">Implementation</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

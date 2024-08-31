@@ -187,10 +187,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2024-08-30 09:38:36 / Modified: 13:22:31" itemprop="dateCreated datePublished" datetime="2024-08-30T09:38:36+08:00">2024-08-30</time>
+              <time title="Created: 2024-08-30 09:38:36" itemprop="dateCreated datePublished" datetime="2024-08-30T09:38:36+08:00">2024-08-30</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-08-31 22:14:39" itemprop="dateModified" datetime="2024-08-31T22:14:39+08:00">2024-08-31</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -212,11 +218,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          In this post, we’ll introduce Convolutional Networks(CNN) with large application.
+          In this post, we'll introduce Convolutional Networks(CNN) with large application.
 
 Theory
 Convolution Operator
-So far we only consider full connected networks, which treat input images as vectors(size is $n$), and use a large weight matrix($W \in R^{n \times d}$) to map input vector to a feature vector. This creates a substantial problem as we atte
+So far we only consider fully connected networks, which treat input images as vectors(size is \(n\)), and use a large weight matrix(\(W \in R^{n \times d}\)) to map input vector to a feature vector. This creates a substantial problem as we
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/08/30/DLSys-Convolutional-Networks/#more" rel="contents">
@@ -299,13 +305,9 @@ So far we only consider full connected networks, which treat input images as vec
       
           Theory
 The two approaches to time series modeling
-Let’s recall our basic time series prediction task from the previous posts. More fundamentally, a time series prediction task is the task of predicting:
-$$
-y_{1:T}=f_\theta(x_{1:T})
-$$
+Let’s recall our basic time series prediction task from the previous posts. More fundamentally, a time series prediction task is the task of predicting: \[ y_{1:T}=f_\theta(x_{1:T}) \]
 
-
-where $y_t$ can depend only on $x_{1:t}$. There are mainly two approach to do so: latent state approach and direc
+where \(y_t\) can depend only on\(x_{1:t}\). There are mainly two approach to do so: latent state approach anddire
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/08/27/DLSys-Transformers-and-Autoregressive-Models/#more" rel="contents">
@@ -388,7 +390,7 @@ where $y_t$ can depend only on $x_{1:t}$. There are mainly two approach to do so
       
           Theory
 Sequence Modeling
-For the previous posts, we make prediction assuming input and output pairs $(x^{(i)}, y^{(i)})$ is independent identically distributed(i.i.d).It means the previous result donnot affect current result. In pratice, many cases where the input/output pairs are given in a specific sequence, and we need to use the information abo
+For the previous posts, we make prediction assuming input and output pairs \((x^{(i)}, y^{(i)})\) isindependent identically distributed(i.i.d).It means the previous result donnot affect current result. In pratice, many cases where the input/output pairs are given in a specific sequence, and we need to use the information ab
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/08/24/DLSys-Sequence-Modeling-and-Recurrent-Networks/#more" rel="contents">
