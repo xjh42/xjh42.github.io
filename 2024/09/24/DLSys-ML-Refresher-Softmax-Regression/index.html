@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="In this post, I’ll introduce the machine learning basics.  Machine Learning Basics Suppose you want to write a program that will classify handwritten drawing of digits into their appropriate category:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DLSys: ML Refresher &#x2F; Softmax Regression">
+<meta property="og:url" content="http://example.com/2024/09/24/DLSys-ML-Refresher-Softmax-Regression/index.html">
+<meta property="og:site_name" content="MLSys Day One">
+<meta property="og:description" content="In this post, I’ll introduce the machine learning basics.  Machine Learning Basics Suppose you want to write a program that will classify handwritten drawing of digits into their appropriate category:">
+<meta property="og:locale">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924091119545.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924091220614.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924093023427.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924093044172.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924093324238.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924094501602.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924094719645.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924094943710.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924095031145.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924095218315.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924095421785.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924095509447.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924100156250.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924100246907.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924100441453.png">
+<meta property="article:published_time" content="2024-09-24T01:07:04.000Z">
+<meta property="article:modified_time" content="2024-09-24T02:42:33.940Z">
+<meta property="article:author" content="xjh42">
+<meta property="article:tag" content="ml_basics">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924091119545.png">
+
+<link rel="canonical" href="http://example.com/2024/09/24/DLSys-ML-Refresher-Softmax-Regression/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>DLSys: ML Refresher / Softmax Regression | MLSys Day One</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">MLSys Day One</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/09/24/DLSys-ML-Refresher-Softmax-Regression/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="xjh42">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MLSys Day One">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          DLSys: ML Refresher / Softmax Regression
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-09-24 09:07:04 / Modified: 10:42:33" itemprop="dateCreated datePublished" datetime="2024-09-24T09:07:04+08:00">2024-09-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/dlsys/" itemprop="url" rel="index"><span itemprop="name">dlsys</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>In this post, I’ll introduce the machine learning basics.</p>
+<h1 id="Machine-Learning-Basics"><a href="#Machine-Learning-Basics" class="headerlink" title="Machine Learning Basics"></a>Machine Learning Basics</h1><p>Suppose you want to write a program that will classify handwritten drawing of digits into their appropriate category: 0,1,…,9. You could, think hard about the nature of digits, try to determine the logic of what indicates what kind of digit, and write a program to codify this logic (Despite being a reasonable coder, I don’t think I could do this very well)</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924091119545.png" alt="image-20240924091119545" style="zoom: 45%;" />
+
+<p>The (supervised) <strong>ML approach</strong>: collect a training set of images with known labels and feed these into a machine learning algorithm, which will (if done well), automatically produce a “program” that solves this task.</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924091220614.png" alt="image-20240924091220614" style="zoom:50%;" />
+
+<p>Every machine learning algorithm consists of three different elements:</p>
+<ol>
+<li><strong>The hypothesis class(the model)</strong>: the “program structure”, parameterized via a set of parameters, that describes how we map inputs (e.g., images of digits) to outputs (e.g., class labels, or probabilities of different class labels)</li>
+<li><strong>The loss function:</strong> a function that specifies how “well” a given hypothesis (i.e., a choice of parameters) performs on the task of interest</li>
+<li><strong>An optimization method:</strong>  a procedure for determining a set of parameters that (approximately) minimize the sum of losses over the training set</li>
+</ol>
+<h1 id="softmax-regression"><a href="#softmax-regression" class="headerlink" title="softmax regression"></a>softmax regression</h1><p>Softmax regression is a basic method to solve <em>k-class classification</em>  problem. Let’s first define the problem:</p>
+<h2 id="Multi-class-classification-setting"><a href="#Multi-class-classification-setting" class="headerlink" title="Multi-class classification setting"></a>Multi-class classification setting</h2><p>Let’s consider a k-class classification setting, where we have:</p>
+<ul>
+<li><strong>Training data</strong>: $x^{(i)} \in R^n$, and $y^{(i)} \in {1,…,k}$ for $i \in {1,..,m}$</li>
+<li>𝑛 &#x3D; dimensionality of the input data</li>
+<li>𝑘 &#x3D; number of different classes &#x2F; labels</li>
+<li>𝑚 &#x3D; number of points in the training set</li>
+</ul>
+<p>Example: classification of 28x28 MNIST digits:</p>
+<ul>
+<li>𝑛 &#x3D; 28 ⋅ 28 &#x3D; 784 </li>
+<li>𝑘 &#x3D; 10 </li>
+<li>𝑚 &#x3D; 60,000</li>
+</ul>
+<h2 id="Three-Element-of-Softmax-Regression"><a href="#Three-Element-of-Softmax-Regression" class="headerlink" title="Three Element of Softmax Regression"></a>Three Element of Softmax Regression</h2><h3 id="Linear-hypothesis-function"><a href="#Linear-hypothesis-function" class="headerlink" title="Linear hypothesis function"></a>Linear hypothesis function</h3><p>Our hypothesis function maps inputs $x \in R^n$  to 𝑘-dimensional vectors:<br>$$<br>h: R^n \to R^k<br>$$<br>where $h_i(x), i \in {1,..k}$ indicates some measure of “belief” in how much likely the label is to be class 𝑖 (i.e., “most likely” prediction is coordinate 𝑖 with largest $h_i(x)$.)</p>
+<p>A <strong>linear hypothesis function</strong> uses a linear operator (i.e. matrix multiplication) for this transformation:<br>$$<br>h_\theta(x) &#x3D; \theta^Tx<br>$$<br>for parameters $\theta \in R^{n \times k}$</p>
+<p>Often more convenient (and this is how you want to code things for efficiency) to write the data and operations in <strong>matrix batch form</strong>:</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924093023427.png" alt="image-20240924093023427" style="zoom:33%;" />
+
+<p>Then the linear hypothesis applied to this batch can be written as:</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924093044172.png" alt="image-20240924093044172" style="zoom:33%;" />
+
+<h3 id="Loss-Function"><a href="#Loss-Function" class="headerlink" title="Loss Function"></a>Loss Function</h3><p>The simplest loss function to use in classification is just the <strong>classification error</strong>, i.e., whether the classifier makes a mistake a or not:</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924093324238.png" alt="image-20240924093324238" style="zoom:33%;" />
+
+<p>We typically use this loss function to assess the quality of classifiers.</p>
+<p>Unfortunately, the error is a bad loss function to use for optimization, i.e., selecting the best parameters, because it is not differentiable.</p>
+<h3 id="softmax-cross-entropy-loss"><a href="#softmax-cross-entropy-loss" class="headerlink" title="softmax &#x2F; cross-entropy loss"></a>softmax &#x2F; cross-entropy loss</h3><p>Let’s convert the hypothesis function to a “probability” by <strong>exponentiating and normalizing its entries</strong> (to make them all positive and sum to one):<br>$$<br>z_i &#x3D; p(label&#x3D;i) &#x3D; \frac{exp(h_i(x))}{\sum_{j&#x3D;1}^kexp(h_j(x))} &#x3D; norm(exp(h(y))<br>$$<br>Then let’s define a loss to be the (negative) log probability of the true class: this is called softmax or cross-entropy loss :<br>$$<br>l_{ce}(h(x),y) &#x3D; -log(p(label&#x3D;y)) &#x3D; -h_y(x) + log\sum_{j&#x3D;1}^kexp(h_j(x))<br>$$</p>
+<h3 id="Softmax-Regression-Optimization-Method-Stochastic-Gradient-Descent"><a href="#Softmax-Regression-Optimization-Method-Stochastic-Gradient-Descent" class="headerlink" title="Softmax Regression Optimization Method: Stochastic Gradient Descent"></a>Softmax Regression Optimization Method: Stochastic Gradient Descent</h3><p>The third ingredient of a machine learning algorithm is a method for solving the associated optimization problem, i.e., the problem of minimizing the average loss on the training set:</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924094501602.png" alt="image-20240924094501602" style="zoom:33%;" /> 
+
+<p>So how do we find Θ that solves this optimization problem?</p>
+<p>For a matrix-input, scalar output function $f: R^{n \times k} \to R$  the gradient is defined as the matrix of partial derivatives:</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924094719645.png" alt="image-20240924094719645" style="zoom: 67%;" />
+
+<p>Gradient points in the direction that most increases 𝑓 (locally).</p>
+<p>To minimize a function, the gradient descent algorithm proceeds by <strong>iteratively taking steps in the direction of the negative gradient</strong>:</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924094943710.png" alt="image-20240924094943710" style="zoom:50%;" />
+
+<p>where 𝛼 &gt; 0 is a step size or learning rate:</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924095031145.png" alt="image-20240924095031145" style="zoom:50%;" />
+
+<p>If our objective (as is the case in machine learning) is the sum of individual losses, we don’t want to compute the gradient using all examples to make a single update to the parameters.</p>
+<p>Instead, take many gradient steps each based upon a minibatch (small partition of the data), to make many parameter updates using a single “pass” over data</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924095218315.png" alt="image-20240924095218315" style="zoom:50%;" />
+
+<p>So, how do we compute the gradient for the softmax objective?</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924095421785.png" alt="image-20240924095421785" style="zoom:40%;" />
+
+<p>Let’s start by deriving the gradient of the softmax loss itself: for vector $h \in R^k$:</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924095509447.png" alt="image-20240924095509447" style="zoom:33%;" />
+
+<p>So, in vector form: $\bigtriangledown_hl_{ce}(h,y)&#x3D;z-e_y$, where 𝑧 &#x3D; norm(exp(h)).</p>
+<p>Then, let’s compute the “derivative” of the loss:</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924100156250.png" alt="image-20240924100156250" style="zoom:33%;" />
+
+<p>So to make the dimensions work:</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924100246907.png" alt="image-20240924100246907" style="zoom:33%;" />
+
+<p>Same process works if we use “matrix batch” form of the loss:</p>
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924100441453.png" alt="image-20240924100441453" style="zoom:33%;" />
+
+<h2 id="Softmax-Regression-All-in-One"><a href="#Softmax-Regression-All-in-One" class="headerlink" title="Softmax Regression All in One"></a>Softmax Regression All in One</h2><p>Despite a fairly complex derivation, we should highly just how simple the final algorithm is:</p>
+<ul>
+<li>Repeat until parameters &#x2F; loss converges <ul>
+<li>Iterative over minibatches $X \in R^{B \times n}, y \in {1,…,k}^B$ of training set </li>
+<li>Update the parameters $\theta &#x3D; \theta - \frac{\alpha}{B}X^T(Z - I_y)$</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ml-basics/" rel="tag"># ml_basics</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/08/30/DLSys-Convolutional-Networks/" rel="prev" title="DLSys: Convolutional Networks">
+      <i class="fa fa-chevron-left"></i> DLSys: Convolutional Networks
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/09/24/DLSys-Manual-Neural-Networks/" rel="next" title="DLSys: Manual Neural Networks">
+      DLSys: Manual Neural Networks <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Machine-Learning-Basics"><span class="nav-number">1.</span> <span class="nav-text">Machine Learning Basics</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#softmax-regression"><span class="nav-number">2.</span> <span class="nav-text">softmax regression</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Multi-class-classification-setting"><span class="nav-number">2.1.</span> <span class="nav-text">Multi-class classification setting</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Three-Element-of-Softmax-Regression"><span class="nav-number">2.2.</span> <span class="nav-text">Three Element of Softmax Regression</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linear-hypothesis-function"><span class="nav-number">2.2.1.</span> <span class="nav-text">Linear hypothesis function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Loss-Function"><span class="nav-number">2.2.2.</span> <span class="nav-text">Loss Function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#softmax-cross-entropy-loss"><span class="nav-number">2.2.3.</span> <span class="nav-text">softmax &#x2F; cross-entropy loss</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Softmax-Regression-Optimization-Method-Stochastic-Gradient-Descent"><span class="nav-number">2.2.4.</span> <span class="nav-text">Softmax Regression Optimization Method: Stochastic Gradient Descent</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Softmax-Regression-All-in-One"><span class="nav-number">2.3.</span> <span class="nav-text">Softmax Regression All in One</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">xjh42</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xjh42</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
