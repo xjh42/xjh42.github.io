@@ -189,7 +189,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2024-09-24 13:05:58 / Modified: 13:08:08" itemprop="dateCreated datePublished" datetime="2024-09-24T13:05:58+08:00">2024-09-24</time>
+              <time title="Created: 2024-09-24 13:05:58 / Modified: 13:28:58" itemprop="dateCreated datePublished" datetime="2024-09-24T13:05:58+08:00">2024-09-24</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -212,11 +212,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          In this post, I’ll introduce nerual network basics.
+          In this post, I'll introduce nerual network basics.
 
 Nonlinear hypothesis classes
-Neural networks
-Backpropagation
+Recall that we needed a hypothesis function to map inputs in \(R^n\) to outputs (class logits) in \(R^k\), so we initially used the linear hypothesis class. \[ h_\theta(x) = \theta^Tx, \theta \in R^{n \times k} \] This classifier essentially forms k linear functions o
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/09/24/DLSys-Manual-Neural-Networks/#more" rel="contents">
@@ -291,7 +290,7 @@ Backpropagation
     <div class="post-body" itemprop="articleBody">
 
       
-          In this post, I’ll introduce the machine learning basics.
+          In this post, I'll introduce the machine learning basics.
 
 Machine Learning Basics
 Suppose you want to write a program that will classify handwritten drawing of digits into their appropriate category: 0,1,…,9. You could, think hard about the nature of digits, try to determine the logic of what indicates what kind of digit, and write a program to co
@@ -375,11 +374,11 @@ Suppose you want to write a program that will classify handwritten drawing of di
     <div class="post-body" itemprop="articleBody">
 
       
-          In this post, we’ll introduce Convolutional Networks(CNN) with large application.
+          In this post, we'll introduce Convolutional Networks(CNN) with large application.
 
 Theory
 Convolution Operator
-So far we only consider fully connected networks, which treat input images as vectors(size is $n$), and use a large weight matrix($W \in R^{n \times d}$) to map input vector to a feature vector. This creates a substantial problem as we att
+So far we only consider fully connected networks, which treat input images as vectors(size is \(n\)), and use a large weight matrix(\(W \in R^{n \times d}\)) to map input vector to a feature vector. This creates a substantial problem as we
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/08/30/DLSys-Convolutional-Networks/#more" rel="contents">
@@ -462,13 +461,9 @@ So far we only consider fully connected networks, which treat input images as ve
       
           Theory
 The two approaches to time series modeling
-Let’s recall our basic time series prediction task from the previous posts. More fundamentally, a time series prediction task is the task of predicting:
-$$
-y_{1:T}=f_\theta(x_{1:T})
-$$
+Let’s recall our basic time series prediction task from the previous posts. More fundamentally, a time series prediction task is the task of predicting: \[ y_{1:T}=f_\theta(x_{1:T}) \]
 
-
-where $y_t$ can depend only on $x_{1:t}$. There are mainly two approach to do so: latent state approach and direc
+where \(y_t\) can depend only on\(x_{1:t}\). There are mainly two approach to do so: latent state approach anddire
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/08/27/DLSys-Transformers-and-Autoregressive-Models/#more" rel="contents">
@@ -551,7 +546,7 @@ where $y_t$ can depend only on $x_{1:t}$. There are mainly two approach to do so
       
           Theory
 Sequence Modeling
-For the previous posts, we make prediction assuming input and output pairs $(x^{(i)}, y^{(i)})$ is independent identically distributed(i.i.d).It means the previous result donnot affect current result. In pratice, many cases where the input/output pairs are given in a specific sequence, and we need to use the information abo
+For the previous posts, we make prediction assuming input and output pairs \((x^{(i)}, y^{(i)})\) isindependent identically distributed(i.i.d).It means the previous result donnot affect current result. In pratice, many cases where the input/output pairs are given in a specific sequence, and we need to use the information ab
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/08/24/DLSys-Sequence-Modeling-and-Recurrent-Networks/#more" rel="contents">

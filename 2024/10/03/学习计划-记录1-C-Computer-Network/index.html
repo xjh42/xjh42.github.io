@@ -20,24 +20,20 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="In this post, I&#39;ll introduce nerual network basics.  Nonlinear hypothesis classes Recall that we needed a hypothesis function to map inputs in \(R^n\) to outputs (class logits) in \(R^k\), so we initi">
+  <meta name="description" content="计划从四个方面夯实自己的专业技能: 网络、计算和存储。  需要学完的内容  1. 基础技能   * 熟练掌握C++,学完:Concepts of C++ programming * 视频: https:&#x2F;&#x2F;live.rbg.tum.de&#x2F;?year&#x3D;2022&amp;term&#x3D;W&amp;slug&#x3D;cpp&amp;view&#x3D;3     * 作业: https:&#x2F;&#x2F;github.com&#x2F;skyla15&#x2F;TUM_23WS_C">
 <meta property="og:type" content="article">
-<meta property="og:title" content="DLSys: Manual Neural Networks">
-<meta property="og:url" content="http://example.com/2024/09/24/DLSys-Manual-Neural-Networks/index.html">
+<meta property="og:title" content="学习计划&amp;记录1: 夯实基础">
+<meta property="og:url" content="http://example.com/2024/10/03/%E5%AD%A6%E4%B9%A0%E8%AE%A1%E5%88%92-%E8%AE%B0%E5%BD%951-C-Computer-Network/index.html">
 <meta property="og:site_name" content="MLSys Day One">
-<meta property="og:description" content="In this post, I&#39;ll introduce nerual network basics.  Nonlinear hypothesis classes Recall that we needed a hypothesis function to map inputs in \(R^n\) to outputs (class logits) in \(R^k\), so we initi">
+<meta property="og:description" content="计划从四个方面夯实自己的专业技能: 网络、计算和存储。  需要学完的内容  1. 基础技能   * 熟练掌握C++,学完:Concepts of C++ programming * 视频: https:&#x2F;&#x2F;live.rbg.tum.de&#x2F;?year&#x3D;2022&amp;term&#x3D;W&amp;slug&#x3D;cpp&amp;view&#x3D;3     * 作业: https:&#x2F;&#x2F;github.com&#x2F;skyla15&#x2F;TUM_23WS_C">
 <meta property="og:locale">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924131137657.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924131225307.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924132433576.png">
-<meta property="article:published_time" content="2024-09-24T05:05:58.000Z">
-<meta property="article:modified_time" content="2024-09-24T05:28:58.084Z">
+<meta property="article:published_time" content="2024-10-03T14:20:22.000Z">
+<meta property="article:modified_time" content="2024-10-03T14:44:10.646Z">
 <meta property="article:author" content="xjh42">
-<meta property="article:tag" content="nn_basics">
+<meta property="article:tag" content="plan">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924131137657.png">
 
-<link rel="canonical" href="http://example.com/2024/09/24/DLSys-Manual-Neural-Networks/">
+<link rel="canonical" href="http://example.com/2024/10/03/%E5%AD%A6%E4%B9%A0%E8%AE%A1%E5%88%92-%E8%AE%B0%E5%BD%951-C-Computer-Network/">
 
 
 <script id="page-configurations">
@@ -50,7 +46,7 @@
   };
 </script>
 
-  <title>DLSys: Manual Neural Networks | MLSys Day One</title>
+  <title>学习计划&记录1: 夯实基础 | MLSys Day One</title><meta name="robots" content="noindex">
   
 
 
@@ -174,7 +170,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/09/24/DLSys-Manual-Neural-Networks/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/10/03/%E5%AD%A6%E4%B9%A0%E8%AE%A1%E5%88%92-%E8%AE%B0%E5%BD%951-C-Computer-Network/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -187,7 +183,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          DLSys: Manual Neural Networks
+          学习计划&记录1: 夯实基础
         </h1>
 
         <div class="post-meta">
@@ -198,16 +194,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2024-09-24 13:05:58 / Modified: 13:28:58" itemprop="dateCreated datePublished" datetime="2024-09-24T13:05:58+08:00">2024-09-24</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/dlsys/" itemprop="url" rel="index"><span itemprop="name">dlsys</span></a>
-                </span>
+              <time title="Created: 2024-10-03 22:20:22 / Modified: 22:44:10" itemprop="dateCreated datePublished" datetime="2024-10-03T22:20:22+08:00">2024-10-03</time>
             </span>
 
           
@@ -221,74 +208,25 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>In this post, I'll introduce nerual network basics.</p>
-<h1 id="nonlinear-hypothesis-classes">Nonlinear hypothesis classes</h1>
-<p>Recall that we needed a hypothesis function to map inputs in <span
-class="math inline">\(R^n\)</span> to outputs (class logits) in <span
-class="math inline">\(R^k\)</span>, so we initially used the linear
-hypothesis class. <span class="math display">\[
-h_\theta(x) = \theta^Tx, \theta \in R^{n \times k}
-\]</span> This classifier essentially forms k linear functions of the
-input and then predicts the class with the largest value: equivalent to
-partitioning the input into k linear regions corresponding to each
-class.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924131137657.png" alt="image-20240924131137657" style="zoom:33%;" /></p>
-<p>What if we have data that cannot be separated by a set of linear
-regions? We want some way to separate these points via a nonlinear set
-of class boundaries.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924131225307.png" alt="image-20240924131225307" style="zoom:33%;" /></p>
-<p>We can apply a linear classifier to <strong>some (potentially
-higher-dimensional) features of the data</strong>. <span
-class="math display">\[
-h_\theta(x) = \theta^T\phi(x), \theta \in R^{d \times k}, \phi: R^n \to
-R^d
-\]</span></p>
-<h2 id="nonlinear-feature">Nonlinear Feature</h2>
-<p>How can we create the feature function <span
-class="math inline">\(\phi\)</span>?</p>
+        <p>计划从四个方面夯实自己的专业技能: 网络、计算和存储。</p>
+<h2 id="需要学完的内容">需要学完的内容</h2>
+<ol type="1">
+<li>基础技能</li>
+</ol>
 <ul>
-<li>Through manual engineering of features relevant to the problem (the
-“old” way of doing machine learning)</li>
-<li>In a way that itself is learned from data (the “new” way of doing
-ML)</li>
+<li>熟练掌握C++,学完:<a
+target="_blank" rel="noopener" href="https://ciip.in.tum.de/teaching/cpp_ws23.html">Concepts of C++
+programming</a>
+<ul>
+<li>视频:
+https://live.rbg.tum.de/?year=2022&amp;term=W&amp;slug=cpp&amp;view=3</li>
+<li>作业: https://github.com/skyla15/TUM_23WS_CPP_Course</li>
+</ul></li>
+<li>掌握系统编程,学完: <a
+target="_blank" rel="noopener" href="https://cs.brown.edu/courses/csci0300/2024/index.html">Fundamentals
+of Computer Systems</a></li>
 </ul>
-<p>First take: what if we just again use a linear function for $<span
-class="math inline">\(?\)</span>$ (x) = W^Tx $$</p>
-<p>Doesn’t work, because it is just equivalent to another linear
-classifier: <span class="math display">\[
-h_\theta(x) = \theta^T\phi(x)=\theta^TW^Tx = \hat{\theta}x
-\]</span> We can add nonlinear function the result like: <span
-class="math display">\[
-\phi(x) = \sigma(W^Tx)
-\]</span> where <span class="math inline">\(W \in R^{n \times
-d}\)</span>, and $ : R^d R^d $ is essentially any nonlinear
-function.</p>
-<p>Example: let W be a (fixed) matrix of random Gaussian samples, and
-let $ $ be the cosine function ⟹ “random Fourier features” (work great
-for many problems) But maybe we want to train $ W $ to minimize loss as
-well? Or maybe we want to compose multiple features together?</p>
-<h1 id="neural-networks">Neural networks</h1>
-<p>A neural network refers to a particular type of hypothesis class,
-consisting of <strong>multiple, parameterized differentiable functions
-(a.k.a. “layers”) composed together in any manner to form the
-output.</strong></p>
-<h2 id="the-two-layer-neural-network">The “two layer” neural
-network</h2>
-<p>We can begin with the simplest form of neural network, basically just
-the nonlinear features proposed earlier, but where both sets of weights
-are learnable parameters.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924132433576.png" alt="image-20240924132433576" style="zoom:33%;" />
-<span class="math display">\[
-h_\theta(x)=W_2^T\sigma(W_1^Tx), \theta = \{W_1 \in R^{n \times d},W_2
-\in R^{d \times k } \}
-\]</span></p>
-<p>where <span class="math inline">\(\sigma: R \to R\)</span> is a
-nonlinear function applied elementwise to the vector (e.g. sigmoid,
-ReLU). Written in batch matrix form: <span class="math display">\[
-h_\theta(X) = \sigma(XW_1)W_2
-\]</span></p>
-<h1 id="backpropagation">Backpropagation</h1>
-
+<!-- flag of hidden posts -->
     </div>
 
     
@@ -297,20 +235,13 @@ h_\theta(X) = \sigma(XW_1)W_2
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/nn-basics/" rel="tag"># nn_basics</a>
+              <a href="/tags/plan/" rel="tag"># plan</a>
           </div>
 
         
 
 
         
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2024/09/24/DLSys-ML-Refresher-Softmax-Regression/" rel="prev" title="DLSys: ML Refresher / Softmax Regression">
-      <i class="fa fa-chevron-left"></i> DLSys: ML Refresher / Softmax Regression
-    </a></div>
-      <div class="post-nav-item"></div>
-    </div>
       </footer>
     
   </article>
@@ -368,8 +299,7 @@ h_\theta(X) = \sigma(XW_1)W_2
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#nonlinear-hypothesis-classes"><span class="nav-number">1.</span> <span class="nav-text">Nonlinear hypothesis classes</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#nonlinear-feature"><span class="nav-number">1.1.</span> <span class="nav-text">Nonlinear Feature</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#neural-networks"><span class="nav-number">2.</span> <span class="nav-text">Neural networks</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#the-two-layer-neural-network"><span class="nav-number">2.1.</span> <span class="nav-text">The “two layer” neural
-network</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#backpropagation"><span class="nav-number">3.</span> <span class="nav-text">Backpropagation</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9C%80%E8%A6%81%E5%AD%A6%E5%AE%8C%E7%9A%84%E5%86%85%E5%AE%B9"><span class="nav-number">1.</span> <span class="nav-text">需要学完的内容</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
