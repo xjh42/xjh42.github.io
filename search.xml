@@ -237,241 +237,6 @@ href="https://colab.research.google.com/drive/1N6MtkNXq6QOpGYhXTokOjWvkF3Ff9i8Z?
       </tags>
   </entry>
   <entry>
-    <title>DLSys: ML Refresher / Softmax Regression</title>
-    <url>/2024/09/24/DLSys-ML-Refresher-Softmax-Regression/</url>
-    <content><![CDATA[<p>In this post, I'll introduce the machine learning basics.</p>
-<h1 id="machine-learning-basics">Machine Learning Basics</h1>
-<p>Suppose you want to write a program that will classify handwritten
-drawing of digits into their appropriate category: 0,1,…,9. You could,
-think hard about the nature of digits, try to determine the logic of
-what indicates what kind of digit, and write a program to codify this
-logic (Despite being a reasonable coder, I don’t think I could do this
-very well)</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924091119545.png" alt="image-20240924091119545" style="zoom: 45%;" /></p>
-<p>The (supervised) <strong>ML approach</strong>: collect a training set
-of images with known labels and feed these into a machine learning
-algorithm, which will (if done well), automatically produce a “program”
-that solves this task.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924091220614.png" alt="image-20240924091220614" style="zoom:50%;" /></p>
-<p>Every machine learning algorithm consists of three different
-elements:</p>
-<ol type="1">
-<li><strong>The hypothesis class(the model)</strong>: the “program
-structure”, parameterized via a set of parameters, that describes how we
-map inputs (e.g., images of digits) to outputs (e.g., class labels, or
-probabilities of different class labels)</li>
-<li><strong>The loss function:</strong> a function that specifies how
-“well” a given hypothesis (i.e., a choice of parameters) performs on the
-task of interest</li>
-<li><strong>An optimization method:</strong> a procedure for determining
-a set of parameters that (approximately) minimize the sum of losses over
-the training set</li>
-</ol>
-<h1 id="softmax-regression">softmax regression</h1>
-<p>Softmax regression is a basic method to solve <em>k-class
-classification</em> problem. Let's first define the problem:</p>
-<h2 id="multi-class-classification-setting">Multi-class classification
-setting</h2>
-<p>Let’s consider a k-class classification setting, where we have:</p>
-<ul>
-<li><strong>Training data</strong>: <span class="math inline">\(x^{(i)}
-\in R^n\)</span>, and <span class="math inline">\(y^{(i)} \in
-{1,...,k}\)</span> for <span class="math inline">\(i \in
-{1,..,m}\)</span></li>
-<li>𝑛 = dimensionality of the input data</li>
-<li>𝑘 = number of different classes / labels</li>
-<li>𝑚 = number of points in the training set</li>
-</ul>
-<p>Example: classification of 28x28 MNIST digits:</p>
-<ul>
-<li>𝑛 = 28 ⋅ 28 = 784</li>
-<li>𝑘 = 10</li>
-<li>𝑚 = 60,000</li>
-</ul>
-<h2 id="three-element-of-softmax-regression">Three Element of Softmax
-Regression</h2>
-<h3 id="linear-hypothesis-function">Linear hypothesis function</h3>
-<p>Our hypothesis function maps inputs <span class="math inline">\(x \in
-R^n\)</span> to 𝑘-dimensional vectors: <span class="math display">\[
-h: R^n \to R^k
-\]</span> where <span class="math inline">\(h_i(x), i \in
-{1,..k}\)</span> indicates some measure of “belief” in how much likely
-the label is to be class 𝑖 (i.e., “most likely” prediction is coordinate
-𝑖 with largest <span class="math inline">\(h_i(x)\)</span>.)</p>
-<p>A <strong>linear hypothesis function</strong> uses a linear operator
-(i.e. matrix multiplication) for this transformation: <span
-class="math display">\[
-h_\theta(x) = \theta^Tx
-\]</span> for parameters <span class="math inline">\(\theta \in R^{n
-\times k}\)</span></p>
-<p>Often more convenient (and this is how you want to code things for
-efficiency) to write the data and operations in <strong>matrix batch
-form</strong>:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924093023427.png" alt="image-20240924093023427" style="zoom:33%;" /></p>
-<p>Then the linear hypothesis applied to this batch can be written
-as:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924093044172.png" alt="image-20240924093044172" style="zoom:33%;" /></p>
-<h3 id="loss-function">Loss Function</h3>
-<p>The simplest loss function to use in classification is just the
-<strong>classification error</strong>, i.e., whether the classifier
-makes a mistake a or not:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924093324238.png" alt="image-20240924093324238" style="zoom:33%;" /></p>
-<p>We typically use this loss function to assess the quality of
-classifiers.</p>
-<p>Unfortunately, the error is a bad loss function to use for
-optimization, i.e., selecting the best parameters, because it is not
-differentiable.</p>
-<h3 id="softmax-cross-entropy-loss">softmax / cross-entropy loss</h3>
-<p>Let’s convert the hypothesis function to a “probability” by
-<strong>exponentiating and normalizing its entries</strong> (to make
-them all positive and sum to one): <span class="math display">\[
-z_i = p(label=i) = \frac{exp(h_i(x))}{\sum_{j=1}^kexp(h_j(x))} =
-norm(exp(h(y))
-\]</span> Then let’s define a loss to be the (negative) log probability
-of the true class: this is called softmax or cross-entropy loss : <span
-class="math display">\[
-l_{ce}(h(x),y) = -log(p(label=y)) = -h_y(x) + log\sum_{j=1}^kexp(h_j(x))
-\]</span></p>
-<h3
-id="softmax-regression-optimization-method-stochastic-gradient-descent">Softmax
-Regression Optimization Method: Stochastic Gradient Descent</h3>
-<p>The third ingredient of a machine learning algorithm is a method for
-solving the associated optimization problem, i.e., the problem of
-minimizing the average loss on the training set:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924094501602.png" alt="image-20240924094501602" style="zoom:33%;" /></p>
-<p>So how do we find Θ that solves this optimization problem?</p>
-<p>For a matrix-input, scalar output function <span
-class="math inline">\(f: R^{n \times k} \to R\)</span> the gradient is
-defined as the matrix of partial derivatives:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924094719645.png" alt="image-20240924094719645" style="zoom: 67%;" /></p>
-<p>Gradient points in the direction that most increases 𝑓 (locally).</p>
-<p>To minimize a function, the gradient descent algorithm proceeds by
-<strong>iteratively taking steps in the direction of the negative
-gradient</strong>:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924094943710.png" alt="image-20240924094943710" style="zoom:50%;" /></p>
-<p>where 𝛼 &gt; 0 is a step size or learning rate:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924095031145.png" alt="image-20240924095031145" style="zoom:50%;" /></p>
-<p>If our objective (as is the case in machine learning) is the sum of
-individual losses, we don’t want to compute the gradient using all
-examples to make a single update to the parameters.</p>
-<p>Instead, take many gradient steps each based upon a minibatch (small
-partition of the data), to make many parameter updates using a single
-“pass” over data</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924095218315.png" alt="image-20240924095218315" style="zoom:50%;" /></p>
-<p>So, how do we compute the gradient for the softmax objective?</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924095421785.png" alt="image-20240924095421785" style="zoom:40%;" /></p>
-<p>Let’s start by deriving the gradient of the softmax loss itself: for
-vector <span class="math inline">\(h \in R^k\)</span>:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924095509447.png" alt="image-20240924095509447" style="zoom:33%;" /></p>
-<p>So, in vector form: <span
-class="math inline">\(\bigtriangledown_hl_{ce}(h,y)=z-e_y\)</span>,
-where 𝑧 = norm(exp(h)).</p>
-<p>Then, let’s compute the “derivative” of the loss:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924100156250.png" alt="image-20240924100156250" style="zoom:33%;" /></p>
-<p>So to make the dimensions work:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924100246907.png" alt="image-20240924100246907" style="zoom:33%;" /></p>
-<p>Same process works if we use “matrix batch” form of the loss:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924100441453.png" alt="image-20240924100441453" style="zoom:33%;" /></p>
-<h2 id="softmax-regression-all-in-one">Softmax Regression All in
-One</h2>
-<p>Despite a fairly complex derivation, we should highly just how simple
-the final algorithm is:</p>
-<ul>
-<li>Repeat until parameters / loss converges
-<ul>
-<li>Iterative over minibatches <span class="math inline">\(X \in R^{B
-\times n}, y \in \{1,...,k\}^B\)</span> of training set</li>
-<li>Update the parameters <span class="math inline">\(\theta = \theta -
-\frac{\alpha}{B}X^T(Z - I_y)\)</span></li>
-</ul></li>
-</ul>
-]]></content>
-      <categories>
-        <category>dlsys</category>
-      </categories>
-      <tags>
-        <tag>ml_basics</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>DLSys: Manual Neural Networks</title>
-    <url>/2024/09/24/DLSys-Manual-Neural-Networks/</url>
-    <content><![CDATA[<p>In this post, I'll introduce nerual network basics.</p>
-<h1 id="nonlinear-hypothesis-classes">Nonlinear hypothesis classes</h1>
-<p>Recall that we needed a hypothesis function to map inputs in <span
-class="math inline">\(R^n\)</span> to outputs (class logits) in <span
-class="math inline">\(R^k\)</span>, so we initially used the linear
-hypothesis class. <span class="math display">\[
-h_\theta(x) = \theta^Tx, \theta \in R^{n \times k}
-\]</span> This classifier essentially forms k linear functions of the
-input and then predicts the class with the largest value: equivalent to
-partitioning the input into k linear regions corresponding to each
-class.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924131137657.png" alt="image-20240924131137657" style="zoom:33%;" /></p>
-<p>What if we have data that cannot be separated by a set of linear
-regions? We want some way to separate these points via a nonlinear set
-of class boundaries.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924131225307.png" alt="image-20240924131225307" style="zoom:33%;" /></p>
-<p>We can apply a linear classifier to <strong>some (potentially
-higher-dimensional) features of the data</strong>. <span
-class="math display">\[
-h_\theta(x) = \theta^T\phi(x), \theta \in R^{d \times k}, \phi: R^n \to
-R^d
-\]</span></p>
-<h2 id="nonlinear-feature">Nonlinear Feature</h2>
-<p>How can we create the feature function <span
-class="math inline">\(\phi\)</span>?</p>
-<ul>
-<li>Through manual engineering of features relevant to the problem (the
-“old” way of doing machine learning)</li>
-<li>In a way that itself is learned from data (the “new” way of doing
-ML)</li>
-</ul>
-<p>First take: what if we just again use a linear function for $<span
-class="math inline">\(?\)</span>$ (x) = W^Tx $$</p>
-<p>Doesn’t work, because it is just equivalent to another linear
-classifier: <span class="math display">\[
-h_\theta(x) = \theta^T\phi(x)=\theta^TW^Tx = \hat{\theta}x
-\]</span> We can add nonlinear function the result like: <span
-class="math display">\[
-\phi(x) = \sigma(W^Tx)
-\]</span> where <span class="math inline">\(W \in R^{n \times
-d}\)</span>, and $ : R^d R^d $ is essentially any nonlinear
-function.</p>
-<p>Example: let W be a (fixed) matrix of random Gaussian samples, and
-let $ $ be the cosine function ⟹ “random Fourier features” (work great
-for many problems) But maybe we want to train $ W $ to minimize loss as
-well? Or maybe we want to compose multiple features together?</p>
-<h1 id="neural-networks">Neural networks</h1>
-<p>A neural network refers to a particular type of hypothesis class,
-consisting of <strong>multiple, parameterized differentiable functions
-(a.k.a. “layers”) composed together in any manner to form the
-output.</strong></p>
-<h2 id="the-two-layer-neural-network">The “two layer” neural
-network</h2>
-<p>We can begin with the simplest form of neural network, basically just
-the nonlinear features proposed earlier, but where both sets of weights
-are learnable parameters.</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924132433576.png" alt="image-20240924132433576" style="zoom:33%;" />
-<span class="math display">\[
-h_\theta(x)=W_2^T\sigma(W_1^Tx), \theta = \{W_1 \in R^{n \times d},W_2
-\in R^{d \times k } \}
-\]</span></p>
-<p>where <span class="math inline">\(\sigma: R \to R\)</span> is a
-nonlinear function applied elementwise to the vector (e.g. sigmoid,
-ReLU). Written in batch matrix form: <span class="math display">\[
-h_\theta(X) = \sigma(XW_1)W_2
-\]</span></p>
-<h1 id="backpropagation">Backpropagation</h1>
-]]></content>
-      <categories>
-        <category>dlsys</category>
-      </categories>
-      <tags>
-        <tag>nn_basics</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>DLSys: Sequence Modeling and Recurrent Networks</title>
     <url>/2024/08/24/DLSys-Sequence-Modeling-and-Recurrent-Networks/</url>
     <content><![CDATA[<h2 id="theory">Theory</h2>
@@ -922,6 +687,241 @@ href="https://colab.research.google.com/drive/1sSkoJhexTDEgdBahAIm2SeV0Eqc0frj2?
       </categories>
       <tags>
         <tag>transformer</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>DLSys: ML Refresher / Softmax Regression</title>
+    <url>/2024/09/24/DLSys-ML-Refresher-Softmax-Regression/</url>
+    <content><![CDATA[<p>In this post, I'll introduce the machine learning basics.</p>
+<h1 id="machine-learning-basics">Machine Learning Basics</h1>
+<p>Suppose you want to write a program that will classify handwritten
+drawing of digits into their appropriate category: 0,1,…,9. You could,
+think hard about the nature of digits, try to determine the logic of
+what indicates what kind of digit, and write a program to codify this
+logic (Despite being a reasonable coder, I don’t think I could do this
+very well)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924091119545.png" alt="image-20240924091119545" style="zoom: 45%;" /></p>
+<p>The (supervised) <strong>ML approach</strong>: collect a training set
+of images with known labels and feed these into a machine learning
+algorithm, which will (if done well), automatically produce a “program”
+that solves this task.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924091220614.png" alt="image-20240924091220614" style="zoom:50%;" /></p>
+<p>Every machine learning algorithm consists of three different
+elements:</p>
+<ol type="1">
+<li><strong>The hypothesis class(the model)</strong>: the “program
+structure”, parameterized via a set of parameters, that describes how we
+map inputs (e.g., images of digits) to outputs (e.g., class labels, or
+probabilities of different class labels)</li>
+<li><strong>The loss function:</strong> a function that specifies how
+“well” a given hypothesis (i.e., a choice of parameters) performs on the
+task of interest</li>
+<li><strong>An optimization method:</strong> a procedure for determining
+a set of parameters that (approximately) minimize the sum of losses over
+the training set</li>
+</ol>
+<h1 id="softmax-regression">softmax regression</h1>
+<p>Softmax regression is a basic method to solve <em>k-class
+classification</em> problem. Let's first define the problem:</p>
+<h2 id="multi-class-classification-setting">Multi-class classification
+setting</h2>
+<p>Let’s consider a k-class classification setting, where we have:</p>
+<ul>
+<li><strong>Training data</strong>: <span class="math inline">\(x^{(i)}
+\in R^n\)</span>, and <span class="math inline">\(y^{(i)} \in
+{1,...,k}\)</span> for <span class="math inline">\(i \in
+{1,..,m}\)</span></li>
+<li>𝑛 = dimensionality of the input data</li>
+<li>𝑘 = number of different classes / labels</li>
+<li>𝑚 = number of points in the training set</li>
+</ul>
+<p>Example: classification of 28x28 MNIST digits:</p>
+<ul>
+<li>𝑛 = 28 ⋅ 28 = 784</li>
+<li>𝑘 = 10</li>
+<li>𝑚 = 60,000</li>
+</ul>
+<h2 id="three-element-of-softmax-regression">Three Element of Softmax
+Regression</h2>
+<h3 id="linear-hypothesis-function">Linear hypothesis function</h3>
+<p>Our hypothesis function maps inputs <span class="math inline">\(x \in
+R^n\)</span> to 𝑘-dimensional vectors: <span class="math display">\[
+h: R^n \to R^k
+\]</span> where <span class="math inline">\(h_i(x), i \in
+{1,..k}\)</span> indicates some measure of “belief” in how much likely
+the label is to be class 𝑖 (i.e., “most likely” prediction is coordinate
+𝑖 with largest <span class="math inline">\(h_i(x)\)</span>.)</p>
+<p>A <strong>linear hypothesis function</strong> uses a linear operator
+(i.e. matrix multiplication) for this transformation: <span
+class="math display">\[
+h_\theta(x) = \theta^Tx
+\]</span> for parameters <span class="math inline">\(\theta \in R^{n
+\times k}\)</span></p>
+<p>Often more convenient (and this is how you want to code things for
+efficiency) to write the data and operations in <strong>matrix batch
+form</strong>:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924093023427.png" alt="image-20240924093023427" style="zoom:33%;" /></p>
+<p>Then the linear hypothesis applied to this batch can be written
+as:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924093044172.png" alt="image-20240924093044172" style="zoom:33%;" /></p>
+<h3 id="loss-function">Loss Function</h3>
+<p>The simplest loss function to use in classification is just the
+<strong>classification error</strong>, i.e., whether the classifier
+makes a mistake a or not:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924093324238.png" alt="image-20240924093324238" style="zoom:33%;" /></p>
+<p>We typically use this loss function to assess the quality of
+classifiers.</p>
+<p>Unfortunately, the error is a bad loss function to use for
+optimization, i.e., selecting the best parameters, because it is not
+differentiable.</p>
+<h3 id="softmax-cross-entropy-loss">softmax / cross-entropy loss</h3>
+<p>Let’s convert the hypothesis function to a “probability” by
+<strong>exponentiating and normalizing its entries</strong> (to make
+them all positive and sum to one): <span class="math display">\[
+z_i = p(label=i) = \frac{exp(h_i(x))}{\sum_{j=1}^kexp(h_j(x))} =
+norm(exp(h(y))
+\]</span> Then let’s define a loss to be the (negative) log probability
+of the true class: this is called softmax or cross-entropy loss : <span
+class="math display">\[
+l_{ce}(h(x),y) = -log(p(label=y)) = -h_y(x) + log\sum_{j=1}^kexp(h_j(x))
+\]</span></p>
+<h3
+id="softmax-regression-optimization-method-stochastic-gradient-descent">Softmax
+Regression Optimization Method: Stochastic Gradient Descent</h3>
+<p>The third ingredient of a machine learning algorithm is a method for
+solving the associated optimization problem, i.e., the problem of
+minimizing the average loss on the training set:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924094501602.png" alt="image-20240924094501602" style="zoom:33%;" /></p>
+<p>So how do we find Θ that solves this optimization problem?</p>
+<p>For a matrix-input, scalar output function <span
+class="math inline">\(f: R^{n \times k} \to R\)</span> the gradient is
+defined as the matrix of partial derivatives:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924094719645.png" alt="image-20240924094719645" style="zoom: 67%;" /></p>
+<p>Gradient points in the direction that most increases 𝑓 (locally).</p>
+<p>To minimize a function, the gradient descent algorithm proceeds by
+<strong>iteratively taking steps in the direction of the negative
+gradient</strong>:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924094943710.png" alt="image-20240924094943710" style="zoom:50%;" /></p>
+<p>where 𝛼 &gt; 0 is a step size or learning rate:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924095031145.png" alt="image-20240924095031145" style="zoom:50%;" /></p>
+<p>If our objective (as is the case in machine learning) is the sum of
+individual losses, we don’t want to compute the gradient using all
+examples to make a single update to the parameters.</p>
+<p>Instead, take many gradient steps each based upon a minibatch (small
+partition of the data), to make many parameter updates using a single
+“pass” over data</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924095218315.png" alt="image-20240924095218315" style="zoom:50%;" /></p>
+<p>So, how do we compute the gradient for the softmax objective?</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924095421785.png" alt="image-20240924095421785" style="zoom:40%;" /></p>
+<p>Let’s start by deriving the gradient of the softmax loss itself: for
+vector <span class="math inline">\(h \in R^k\)</span>:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924095509447.png" alt="image-20240924095509447" style="zoom:33%;" /></p>
+<p>So, in vector form: <span
+class="math inline">\(\bigtriangledown_hl_{ce}(h,y)=z-e_y\)</span>,
+where 𝑧 = norm(exp(h)).</p>
+<p>Then, let’s compute the “derivative” of the loss:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924100156250.png" alt="image-20240924100156250" style="zoom:33%;" /></p>
+<p>So to make the dimensions work:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924100246907.png" alt="image-20240924100246907" style="zoom:33%;" /></p>
+<p>Same process works if we use “matrix batch” form of the loss:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924100441453.png" alt="image-20240924100441453" style="zoom:33%;" /></p>
+<h2 id="softmax-regression-all-in-one">Softmax Regression All in
+One</h2>
+<p>Despite a fairly complex derivation, we should highly just how simple
+the final algorithm is:</p>
+<ul>
+<li>Repeat until parameters / loss converges
+<ul>
+<li>Iterative over minibatches <span class="math inline">\(X \in R^{B
+\times n}, y \in \{1,...,k\}^B\)</span> of training set</li>
+<li>Update the parameters <span class="math inline">\(\theta = \theta -
+\frac{\alpha}{B}X^T(Z - I_y)\)</span></li>
+</ul></li>
+</ul>
+]]></content>
+      <categories>
+        <category>dlsys</category>
+      </categories>
+      <tags>
+        <tag>ml_basics</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>DLSys: Manual Neural Networks</title>
+    <url>/2024/09/24/DLSys-Manual-Neural-Networks/</url>
+    <content><![CDATA[<p>In this post, I'll introduce nerual network basics.</p>
+<h1 id="nonlinear-hypothesis-classes">Nonlinear hypothesis classes</h1>
+<p>Recall that we needed a hypothesis function to map inputs in <span
+class="math inline">\(R^n\)</span> to outputs (class logits) in <span
+class="math inline">\(R^k\)</span>, so we initially used the linear
+hypothesis class. <span class="math display">\[
+h_\theta(x) = \theta^Tx, \theta \in R^{n \times k}
+\]</span> This classifier essentially forms k linear functions of the
+input and then predicts the class with the largest value: equivalent to
+partitioning the input into k linear regions corresponding to each
+class.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924131137657.png" alt="image-20240924131137657" style="zoom:33%;" /></p>
+<p>What if we have data that cannot be separated by a set of linear
+regions? We want some way to separate these points via a nonlinear set
+of class boundaries.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924131225307.png" alt="image-20240924131225307" style="zoom:33%;" /></p>
+<p>We can apply a linear classifier to <strong>some (potentially
+higher-dimensional) features of the data</strong>. <span
+class="math display">\[
+h_\theta(x) = \theta^T\phi(x), \theta \in R^{d \times k}, \phi: R^n \to
+R^d
+\]</span></p>
+<h2 id="nonlinear-feature">Nonlinear Feature</h2>
+<p>How can we create the feature function <span
+class="math inline">\(\phi\)</span>?</p>
+<ul>
+<li>Through manual engineering of features relevant to the problem (the
+“old” way of doing machine learning)</li>
+<li>In a way that itself is learned from data (the “new” way of doing
+ML)</li>
+</ul>
+<p>First take: what if we just again use a linear function for $<span
+class="math inline">\(?\)</span>$ (x) = W^Tx $$</p>
+<p>Doesn’t work, because it is just equivalent to another linear
+classifier: <span class="math display">\[
+h_\theta(x) = \theta^T\phi(x)=\theta^TW^Tx = \hat{\theta}x
+\]</span> We can add nonlinear function the result like: <span
+class="math display">\[
+\phi(x) = \sigma(W^Tx)
+\]</span> where <span class="math inline">\(W \in R^{n \times
+d}\)</span>, and $ : R^d R^d $ is essentially any nonlinear
+function.</p>
+<p>Example: let W be a (fixed) matrix of random Gaussian samples, and
+let $ $ be the cosine function ⟹ “random Fourier features” (work great
+for many problems) But maybe we want to train $ W $ to minimize loss as
+well? Or maybe we want to compose multiple features together?</p>
+<h1 id="neural-networks">Neural networks</h1>
+<p>A neural network refers to a particular type of hypothesis class,
+consisting of <strong>multiple, parameterized differentiable functions
+(a.k.a. “layers”) composed together in any manner to form the
+output.</strong></p>
+<h2 id="the-two-layer-neural-network">The “two layer” neural
+network</h2>
+<p>We can begin with the simplest form of neural network, basically just
+the nonlinear features proposed earlier, but where both sets of weights
+are learnable parameters.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20240924132433576.png" alt="image-20240924132433576" style="zoom:33%;" />
+<span class="math display">\[
+h_\theta(x)=W_2^T\sigma(W_1^Tx), \theta = \{W_1 \in R^{n \times d},W_2
+\in R^{d \times k } \}
+\]</span></p>
+<p>where <span class="math inline">\(\sigma: R \to R\)</span> is a
+nonlinear function applied elementwise to the vector (e.g. sigmoid,
+ReLU). Written in batch matrix form: <span class="math display">\[
+h_\theta(X) = \sigma(XW_1)W_2
+\]</span></p>
+<h1 id="backpropagation">Backpropagation</h1>
+]]></content>
+      <categories>
+        <category>dlsys</category>
+      </categories>
+      <tags>
+        <tag>nn_basics</tag>
       </tags>
   </entry>
 </search>
