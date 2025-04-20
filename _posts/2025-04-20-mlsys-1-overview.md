@@ -26,3 +26,12 @@ So why calculating differentation is important in deep learning? Let's first loo
 <img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20250210093510526.png" alt="image-20250210093510526" style="zoom: 50%;" />
 
 We can see computing the loss function gradient with respect to hypothesis class parameters is the most common operation in machine learning.
+
+## Common Differentiation Methods
+
+### Numerical differentiation
+
+We can directly compute the partial gradient by definition:
+$$
+\frac{\partial f(\theta)}{\partial \theta_i} = \lim_{\epsilon \rightarrow 0} \frac{f(\theta + \epsilon e_i) - f(\theta)}{\epsilon}
+$$
