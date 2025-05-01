@@ -66,7 +66,7 @@ The disadvantages is **memory access becomes not continuous**
 
 We can also run multiple tasks on multiple hardware threads to speed up the computation. The following examples using openmp to apply parallelization:
 
-<img src="./assets/image-20250313191523054.png" alt="image-20250313191523054" style="zoom:50%;" />
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@master/uPic/image-20250313191523054.png" alt="image-20250313191523054" style="zoom:50%;" />
 
 `#pragma omp parallel for` to change for loop to a parallelized program.
 
@@ -88,7 +88,7 @@ for (int i = 0; i < N; i++) {
 
 Obviously, the run time is O(n^3). If we think about the memory hierarchy, the cost is even worse. The common memory hierarchy is showed as follows:
 
-<img src="./assets/image-20250313192539652.png" alt="image-20250313192539652" style="zoom:50%;" />
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@master/uPic/image-20250313192539652.png" alt="image-20250313192539652" style="zoom:50%;" />
 
 #### Architecture aware analysis
 
@@ -123,7 +123,7 @@ for (int i = 0; i < N; i++) {
 
 In order to reduce the loading cost from dram to register, we can load a sub-matrix to registers in a single time and compute the register matrix multiplication:
 
-<img src="./assets/image-20250313194614876.png" alt="image-20250313194614876" style="zoom:50%;" />
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@master/uPic/image-20250313194614876.png" alt="image-20250313194614876" style="zoom:50%;" />
 
 ```c++ 
 dram float A[N/V1][N/V3][V1][V3];
@@ -164,7 +164,7 @@ However, the number of registers in CPU is small, so v1/v2/v3 cannot be very big
 
 We can avoid the limitation of the number of registers is small by place the sub-matrix to l1cache.
 
-<img src="./assets/image-20250313194817570.png" alt="image-20250313194817570" style="zoom:40%;" />
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@master/uPic/image-20250313194817570.png" alt="image-20250313194817570" style="zoom:40%;" />
 
 ```c++
 dram A[N/B1][B1][N];
@@ -272,13 +272,13 @@ So What is GPU? According to the definition from Nvidia:The GPU is specialized f
 
 The difference in capabilities between the GPU and the CPU exists because they are designed with different goals in mind. While the CPU is designed to **excel at executing a sequence of operations**, called a *thread*, as fast as possible and can execute a few tens of these threads in parallel, the GPU is designed to excel at executing thousands of them in parallel (amortizing the slower single-thread performance to achieve greater throughput).
 
-<img src="./assets/image-20250315111152762.png" alt="image-20250315111152762" style="zoom:50%;" />
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@master/uPic/image-20250315111152762.png" alt="image-20250315111152762" style="zoom:50%;" />
 
 GPU programming use **SIMT(Single instruction multiple threads)** programming mode. It means <u>all threads executes the same code, but can take different path</u>.
 
 Threads are grouped into **blocks**(Thread within the same block have *shared memory*). Blocks are grouped into a **launch grid**. A kernel in GPU executes a grid.
 
-<img src="./assets/image-20250315111808977.png" alt="image-20250315111808977" style="zoom:33%;" />
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@master/uPic/image-20250315111808977.png" alt="image-20250315111808977" style="zoom:33%;" />
 
 Let's look a simple example: add two vectors and store the result to a new vector. The cpu version code is showed as follows:
 
@@ -332,7 +332,7 @@ __global__ void VecAddKernel(float *A, float *B, float *C, int n) {
 
 `blockDim` is the dimension for block, `blockIdx` is the idx of block the kernel will run, `threadIdx` is the idx in the block. We can use these global variables to compute the global offset.
 
-<img src="./assets/image-20250315183533026.png" alt="image-20250315183533026" style="zoom:50%;" />
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@master/uPic/image-20250315183533026.png" alt="image-20250315183533026" style="zoom:50%;" />
 
 - host side: to allocate device memory and launch the grid of computation:
 
@@ -420,7 +420,7 @@ Use cuda can archive 37x speed up for this simple case!
 
 If you are curious about the structure for cuda programming mode: grid->block->thread, you should take a look at the gpu memory hierarchy:
 
-<img src="./assets/image-20250315184402084.png" alt="image-20250315184402084" style="zoom:50%;" />
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@master/uPic/image-20250315184402084.png" alt="image-20250315184402084" style="zoom:50%;" />
 
 The access time decreases from register, shared memory, and global memory. Like the previous example: matrix multiplication, we should use the **reuse pattern** to reduce data movement cost from global memory -> shared memory-> registers.
 
@@ -490,11 +490,11 @@ WindowSumSimple took 388 microsecond to run.
 
 If we see the computation in details, we can find the reuse pattern:
 
-<img src="./assets/image-20250315234627463.png" alt="image-20250315234627463" style="zoom:50%;" />
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@master/uPic/image-20250315234627463.png" alt="image-20250315234627463" style="zoom:50%;" />
 
 An item in the middle location will be load multiple times in different threads. So we can load the items needed to shared memory to apply reuse pattern.
 
-<img src="./assets/image-20250316000534344.png" alt="image-20250316000534344" style="zoom:50%;" />
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@master/uPic/image-20250316000534344.png" alt="image-20250316000534344" style="zoom:50%;" />
 
 ```c++
 #include <iostream>
@@ -595,7 +595,7 @@ __global__ void mm(float A[N][N], float B[N][N], float C[N][N]) {
 
 The computation is showed as follows:
 
-<img src="./assets/image-20250319093818842.png" alt="image-20250319093818842" style="zoom:33%;" />
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@master/uPic/image-20250319093818842.png" alt="image-20250319093818842" style="zoom:33%;" />
 
 #### Block-level: shared memory tiling
 
@@ -633,7 +633,7 @@ __global__ void mm(float A[N][N], float B[N][N], float C[N][N]) {
 
 The computation is showed as follows:
 
-<img src="./assets/image-20250319094117479.png" alt="image-20250319094117479" style="zoom:33%;" />
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@master/uPic/image-20250319094117479.png" alt="image-20250319094117479" style="zoom:33%;" />
 
 By using block-level tiling, we can reduce memory access. 
 
