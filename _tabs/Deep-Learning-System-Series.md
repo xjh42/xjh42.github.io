@@ -1,7 +1,7 @@
 title: Deep Learning System Series
 layout: post
 icon: fas fa-star
-order: 5
+order: 1
 ---
 
 Here is a collection of posts explaining how deep learning system works. 
