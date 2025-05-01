@@ -1,6 +1,6 @@
 title: Deep Learning System Series
 layout: post
-icon: fas fa-star
+icon: fas fa-stream
 order: 1
 ---
 
