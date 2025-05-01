@@ -23,7 +23,7 @@ In this post, I'll introduce the core of deep learning framework: **automatic di
 
 So why calculating differentation is important in deep learning? Let's first look at the three basic elements in deep learning:
 
-<img src="./imgs/image.png" alt="image-20250210093510526" style="zoom: 50%;" />
+<img src="https://cdn.jsdelivr.net/gh/xjh42/oss@main/uPic/image-20250210093510526.png" alt="image-20250210093510526" style="zoom: 50%;" />
 
 We can see computing the loss function gradient with respect to hypothesis class parameters is the most common operation in machine learning.
 
