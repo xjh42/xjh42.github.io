@@ -1,5 +1,5 @@
 ---
-title: Language Model From Strach
+title: Deep Reinforcement Learning
 layout: post
 icon: fas fa-star
 order: 1
