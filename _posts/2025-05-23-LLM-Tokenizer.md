@@ -162,7 +162,7 @@ compression_ratio = get_compression_ratio(string, segments)  # which is 8.8
 
 ## [Byte Pair Encoding (BPE)](https://en.wikipedia.org/wiki/Byte-pair_encoding)
 
-Finally, we'll see a practical tokenizer--BPE Tokenizer. The BPE algorithm was introduced by Philip Gage in 1994 for data compression[[article\]](http://www.pennelynn.com/Documents/CUJ/HTML/94HTML/19940045.HTM). It was adapted to NLP for neural machine translation[[Sennrich+ 2015\]](https://arxiv.org/abs/1508.07909) . BPE was then used by GPT-2[[Radford+ 2019\]](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf).
+Finally, we'll see a practical tokenizer--BPE Tokenizer. The BPE algorithm was introduced by Philip Gage in 1994 for data compression. It was adapted to NLP for neural machine translation[[Sennrich+ 2015\]](https://arxiv.org/abs/1508.07909) . BPE was then used by GPT-2[[Radford+ 2019\]](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf).
 
 The basic idea is to *train* the tokenizer on raw text to automatically determine the vocabulary. It makes common sequences of characters are represented by a single token, rare sequences are represented by many tokens.
 
