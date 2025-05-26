@@ -1,6 +1,6 @@
 ---
-title: 'Language Models 1: Pytorch'
-date: 2025-04-01 09:52:23
+title: 'Language Models 2: Pytorch'
+date: 2025-04-01 18:52:23
 tags:
 - pytorch
 categories:
