@@ -29,6 +29,7 @@ The intuition of tokenization is to break up string into popular segments. We'll
 
 However, there are also tokenizer-free approaches: [**ByT5**](https://arxiv.org/abs/2105.13626), [**MEGABYTE**](https://arxiv.org/pdf/2305.07185), [**BLT**](https://arxiv.org/abs/2412.09871), [**T-FREE**](https://arxiv.org/abs/2406.19223). They use bytes directly, promising, but have not yet been scaled up to the frontier model.
 
+
 ### Architecture
 
 Almost all language models is transformer-based model which introduce by [[Vaswani+ 2017\]](https://arxiv.org/pdf/1706.03762.pdf).  However, in language model, we often use decoder-only transformer, its architecture is shown as follows:
@@ -58,6 +59,13 @@ Training module approximately contains following parts:
 - **Regularization** (e.g., dropout, weight decay)
 
 - **Hyperparameters** (number of heads, hidden dimension): grid search
+
+### Detailed Posts
+You can find more details in following posts:
+
+- **[Language Models 1: Tokenization](https://xjh42.github.io/posts/LLM-Tokenizer/)**
+- **[Language Models 2: Pytorch](https://xjh42.github.io/posts/LLM-Pytorch/)**
+- **[Language Models 3: The Evolution of Transformer-based Language Models](% link _posts/2025-05-31-LLM-The-Evolution-of-Transformer-based-Language-Models.md %})**
 
 ## System
 
