@@ -327,7 +327,7 @@ This is useful for stability. [[PaLM](https://arxiv.org/abs/2204.02311)] pioneer
 
 We can apply layer (RMS) norm to the query and keys  before going into the softmax operation.
 
-<img src="../Library/Application Support/typora-user-images/image-20250528133618528.png" alt="image-20250528133618528" style="zoom:67%;" />
+![image-20250531215035674](https://cdn.jsdelivr.net/gh/xjh42/oss@master/uPic/image-20250531215035674.png)
 
 ##### **Logit soft-capping**
 
