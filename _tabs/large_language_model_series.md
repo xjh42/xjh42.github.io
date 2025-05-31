@@ -65,7 +65,7 @@ You can find more details in following posts:
 
 - **[Language Models 1: Tokenization](https://xjh42.github.io/posts/LLM-Tokenizer/)**
 - **[Language Models 2: Pytorch](https://xjh42.github.io/posts/LLM-Pytorch/)**
-- **[Language Models 3: The Evolution of Transformer-based Language Models](% link _posts/2025-05-31-LLM-The-Evolution-of-Transformer-based-Language-Models.md %})**
+- **Language Models 3: The Evolution of Transformer-based Language Models**
 
 ## System
 
